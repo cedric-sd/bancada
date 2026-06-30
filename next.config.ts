@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Gera um build "standalone" (server + deps mínimas) para imagens Docker enxutas.
+  output: "standalone",
 };
 
 export default nextConfig;
