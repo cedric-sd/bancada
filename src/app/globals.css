@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --board: #b3966a;
+  --ink: #221c12;
+  --paper: #f6eed8;
+  --accent: #b23a2a;
+}
+
+@theme inline {
+  --font-archivo: var(--font-archivo);
+  --font-mono: var(--font-mono);
+  --font-news: var(--font-news);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  /* mesa de trabalho — fundo neutro que emoldura a "bancada" */
+  background: #e7e1d3;
+  color: var(--ink);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Botões físicos: pressionam ao hover/clique, como no protótipo. */
+.press {
+  cursor: pointer;
+  appearance: none;
+  transition: transform 0.06s ease, filter 0.06s ease;
+}
+
+.press:hover {
+  filter: brightness(1.03);
+}
+
+.press:active {
+  transform: translateY(2px);
+}
+
+/* Link de card que destaca levemente no hover. */
+.card-link {
+  display: block;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.card-link:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.02);
+}
