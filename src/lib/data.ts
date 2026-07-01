@@ -229,28 +229,6 @@ export const reviewsBySlug: Record<string, Review[]> = {
   ],
 };
 
-export const devs: Record<string, Dev> = {
-  marakt: {
-    handle: '@marakt',
-    name: 'Mara Klein',
-    initials: 'MK',
-    bio: 'Front-end & ferramentas de CLI. Na bancada desde mar/2024.',
-    level: 14,
-    xp: 2840,
-    xpNext: 3200,
-    badge: 'OURO DEV',
-    stats: { projects: 6, votes: '4.1k', bestRank: '#1' },
-    achievements: [
-      { label: 'TOP DA SEMANA', color: '#b23a2a', rotate: -4 },
-      { label: 'MARATONISTA', color: '#2f6d86', rotate: 3 },
-      { label: '+1000 VOTOS', color: '#557a38', rotate: -2 },
-      { label: 'EARLY BUILDER', color: '#9a6a1f', rotate: 2.5 },
-      { label: '5 IDIOMAS', color: '#7a4b86', rotate: -3 },
-    ],
-    projectSlugs: ['lumen', 'stipple', 'cronos', 'pixelforge'],
-  },
-};
-
 export const getReviews = (slug: string): Review[] => reviewsBySlug[slug] ?? [];
 
 /** Categorias sugeridas no formulário de publicação. */
