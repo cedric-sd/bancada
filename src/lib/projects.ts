@@ -171,6 +171,22 @@ export function deleteProject(slug: string): boolean {
   return info.changes > 0;
 }
 
+/**
+ * Aplica um voto (+1) ou desfaz (-1), persistindo no banco. Nunca fica negativo.
+ * Retorna o projeto atualizado (com rank recalculado) ou undefined se não existe.
+ */
+export function voteProject(slug: string, delta: 1 | -1): Project | undefined {
+  const db = getDb();
+  const row = db.prepare('SELECT votes FROM projects WHERE slug = ?').get(slug) as
+    | { votes: number }
+    | undefined;
+  if (!row) return undefined;
+
+  const next = Math.max(0, row.votes + delta);
+  db.prepare('UPDATE projects SET votes = ? WHERE slug = ?').run(next, slug);
+  return getProjectBySlug(slug);
+}
+
 // Soma de votos exibidos ("1.428" + "655" → "2.083"), separador pt-BR.
 const sumVotes = (list: Project[]) =>
   list
