@@ -3,17 +3,28 @@ import Logo from '@/components/Logo';
 import UserMenu from '@/components/UserMenu';
 import PodiumCard from '@/components/PodiumCard';
 import RankRow from '@/components/RankRow';
-import { listProjects } from '@/lib/projects';
+import SortTabs from '@/components/SortTabs';
+import { listProjects, type SortKey } from '@/lib/projects';
 import { getCurrentUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home() {
+const SORTS: SortKey[] = ['top', 'novos', 'alta'];
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ ordem?: string }>;
+}) {
+  const { ordem } = await searchParams;
+  const sort: SortKey = SORTS.includes(ordem as SortKey) ? (ordem as SortKey) : 'top';
+
   const user = await getCurrentUser();
   const authed = !!user;
-  const all = listProjects(user?.id);
+  const all = listProjects(user?.id, sort);
   const podium = all.slice(0, 3);
   const rest = all.slice(3);
+  const isTop = sort === 'top';
 
   return (
     <Board>
@@ -32,6 +43,11 @@ export default async function Home() {
         <UserMenu user={user} />
       </div>
 
+      {/* sort tabs */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 22 }}>
+        <SortTabs active={sort} />
+      </div>
+
       {/* podium */}
       <div
         style={{
@@ -45,9 +61,17 @@ export default async function Home() {
       >
         {podium[1] ? <PodiumCard project={podium[1]} place={2} palette="cool" authed={authed} /> : null}
         {podium[0] ? (
-          <PodiumCard project={podium[0]} place={1} palette="warm" note="líder · 3 sem." authed={authed} />
+          <PodiumCard
+            project={podium[0]}
+            place={1}
+            palette="warm"
+            note={isTop ? 'líder · 3 sem.' : undefined}
+            authed={authed}
+          />
         ) : null}
-        {podium[2] ? <PodiumCard project={podium[2]} place={3} palette="sage" note="IA · CLI" authed={authed} /> : null}
+        {podium[2] ? (
+          <PodiumCard project={podium[2]} place={3} palette="sage" note={isTop ? 'IA · CLI' : undefined} authed={authed} />
+        ) : null}
       </div>
 
       {/* ranked list */}

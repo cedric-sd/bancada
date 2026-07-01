@@ -26,7 +26,13 @@ export async function POST(request: Request) {
   }
 
   const token = createSession(row.id);
-  const user = { id: row.id, handle: `@${row.handle}`, name: row.name, initials: initialsOf(row.name) };
+  const user = {
+    id: row.id,
+    handle: `@${row.handle}`,
+    name: row.name,
+    initials: initialsOf(row.name),
+    hasAvatar: false,
+  };
   const res = NextResponse.json({ user });
   res.cookies.set(SESSION_COOKIE, token, {
     httpOnly: true,

@@ -48,7 +48,11 @@ export default function UserMenu({ user }: { user: User | null }) {
         }}
       >
         <Link href={`/dev/${handleSlug}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-          <Avatar initials={user.initials} size={26} />
+          <Avatar
+            initials={user.initials}
+            size={26}
+            src={user.hasAvatar ? `/api/users/${handleSlug}/avatar` : undefined}
+          />
           <div>
             <div style={{ font: '800 11px/1 var(--font-archivo)', color: '#221c12' }}>{user.name}</div>
             <div style={{ font: '500 8.5px/1 var(--font-mono)', color: 'rgba(40,30,10,.55)', marginTop: 2 }}>

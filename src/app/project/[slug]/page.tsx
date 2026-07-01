@@ -10,7 +10,7 @@ import ReviewCard from '@/components/ReviewCard';
 import DeleteProjectButton from '@/components/DeleteProjectButton';
 import { getReviews } from '@/lib/data';
 import { getProjectBySlug } from '@/lib/projects';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser, userHasAvatar } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,6 +46,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const reviews = getReviews(slug);
   const devHandle = project.handle.replace(/^@/, '');
   const isOwner = !!user && project.ownerId === user.id;
+  const authorHasAvatar = userHasAvatar(devHandle);
 
   return (
     <Board maxWidth={740}>
@@ -122,7 +123,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
               </span>
             </div>
             <Link href={`/dev/${devHandle}`} style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 9 }}>
-              <Avatar initials={project.author.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()} size={24} />
+              <Avatar
+                initials={project.author.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()}
+                size={24}
+                src={authorHasAvatar ? `/api/users/${devHandle}/avatar` : undefined}
+              />
               <span style={{ font: '500 11px var(--font-mono)', color: 'rgba(40,30,10,.7)' }}>
                 {project.author} · {project.handle}
               </span>

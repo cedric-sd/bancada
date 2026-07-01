@@ -96,20 +96,33 @@ function uniqueSlug(base: string): string {
   return slug;
 }
 
+export type SortKey = 'top' | 'novos' | 'alta';
+
+// Cláusula de ordenação por aba (chaves controladas, seguras para interpolar).
+const ORDER_BY: Record<SortKey, string> = {
+  top: 'p.votes DESC, p.created_at ASC, p.id ASC',
+  novos: 'p.created_at DESC, p.id DESC',
+  alta: 'recent DESC, p.votes DESC, p.id ASC',
+};
+
 /**
- * Lista todos os projetos ordenados por votos (rank 1..n). Se `userId` for
- * informado, marca `voted` para cada projeto votado por esse usuário.
+ * Lista os projetos numa ordem (aba): `top` (mais votados), `novos` (recentes)
+ * ou `alta` (mais votos nos últimos 7 dias). O rank é a posição na ordem.
+ * Se `userId` for informado, marca `voted` para os projetos votados por ele.
  */
-export function listProjects(userId?: number | null): Project[] {
+export function listProjects(userId?: number | null, sort: SortKey = 'top'): Project[] {
+  const orderBy = ORDER_BY[sort] ?? ORDER_BY.top;
   const rows = getDb()
     .prepare(
       `SELECT p.*,
               (uv.user_id IS NOT NULL) AS voted,
-              (pi.project_id IS NOT NULL) AS has_image
+              (pi.project_id IS NOT NULL) AS has_image,
+              (SELECT COUNT(*) FROM user_votes v
+                 WHERE v.project_id = p.id AND v.created_at > datetime('now', '-7 days')) AS recent
        FROM projects p
        LEFT JOIN user_votes uv ON uv.project_id = p.id AND uv.user_id = @userId
        LEFT JOIN project_images pi ON pi.project_id = p.id
-       ORDER BY p.votes DESC, p.created_at ASC, p.id ASC`,
+       ORDER BY ${orderBy}`,
     )
     .all({ userId: userId ?? -1 }) as Row[];
   return rows.map((row, i) => toProject(row, i + 1));
@@ -314,8 +327,13 @@ export function resolveDev(rawHandle: string): Dev | undefined {
   const authored = listProjects().filter((p) => p.handle.replace(/^@/, '').toLowerCase() === key);
 
   const account = getDb()
-    .prepare('SELECT name, handle, bio FROM users WHERE handle = ?')
-    .get(key) as { name: string; handle: string; bio: string } | undefined;
+    .prepare(
+      `SELECT u.name AS name, u.handle AS handle, u.bio AS bio,
+              (av.user_id IS NOT NULL) AS has_avatar
+       FROM users u LEFT JOIN user_avatars av ON av.user_id = u.id
+       WHERE u.handle = ?`,
+    )
+    .get(key) as { name: string; handle: string; bio: string; has_avatar: number } | undefined;
 
   if (authored.length === 0 && !account) return undefined;
 
@@ -342,6 +360,7 @@ export function resolveDev(rawHandle: string): Dev | undefined {
     handle,
     name,
     initials: initialsOf(name),
+    hasAvatar: !!account?.has_avatar,
     bio,
     level,
     xp,
