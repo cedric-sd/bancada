@@ -73,6 +73,30 @@ export function createUser(name: string, handle: string, password: string): Crea
   };
 }
 
+// --- perfil ---
+
+export type Account = { id: number; handle: string; name: string; bio: string };
+
+export function getAccount(userId: number): Account | undefined {
+  const row = getDb()
+    .prepare('SELECT id, handle, name, bio FROM users WHERE id = ?')
+    .get(userId) as { id: number; handle: string; name: string; bio: string } | undefined;
+  return row ? { ...row, handle: withAt(row.handle) } : undefined;
+}
+
+/**
+ * Atualiza nome e bio do usuário. Ao mudar o nome, sincroniza o autor dos
+ * projetos que ele possui (author é denormalizado em projects).
+ */
+export function updateUserProfile(userId: number, name: string, bio: string): void {
+  const db = getDb();
+  const tx = db.transaction(() => {
+    db.prepare('UPDATE users SET name = ?, bio = ? WHERE id = ?').run(name.trim(), bio.trim(), userId);
+    db.prepare('UPDATE projects SET author = ? WHERE owner_id = ?').run(name.trim(), userId);
+  });
+  tx();
+}
+
 // --- sessões ---
 
 export function createSession(userId: number): string {

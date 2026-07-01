@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Board from '@/components/Board';
 import Stamp from '@/components/Stamp';
 import { resolveDev, getProjectBySlug } from '@/lib/projects';
+import { getCurrentUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,15 +30,34 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
   const dev = resolveDev(handle);
   if (!dev) notFound();
 
+  const user = await getCurrentUser();
+  const isSelf = !!user && user.handle.replace(/^@/, '').toLowerCase() === dev.handle.replace(/^@/, '').toLowerCase();
+
   const pct = Math.min(100, Math.round((dev.xp / dev.xpNext) * 100));
   const remaining = (dev.xpNext - dev.xp).toLocaleString('pt-BR');
   const myProjects = dev.projectSlugs.map(getProjectBySlug).filter((p) => p !== undefined);
 
   return (
     <Board maxWidth={740}>
-      <Link href="/" style={{ font: '500 10px var(--font-mono)', color: 'rgba(40,30,10,.6)', display: 'inline-block', marginBottom: 14 }}>
-        ‹ voltar ao placar
-      </Link>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          marginBottom: 14,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Link href="/" style={{ font: '500 10px var(--font-mono)', color: 'rgba(40,30,10,.6)' }}>
+          ‹ voltar ao placar
+        </Link>
+        {isSelf ? (
+          <Link href="/perfil/editar" style={{ font: '600 11px var(--font-mono)', color: 'rgba(40,30,10,.6)' }}>
+            editar perfil
+          </Link>
+        ) : null}
+      </div>
 
       {/* profile card */}
       <div

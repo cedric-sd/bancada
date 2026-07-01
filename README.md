@@ -17,6 +17,7 @@ Tailwind CSS v4), iniciado via `create-next-app`.
 | `/dev/[handle]` | **Perfil (1e)** | Nível, barra de XP, conquistas e projetos publicados do dev. |
 | `/entrar`, `/cadastrar` | **Conta** | Login e cadastro (handle + senha). |
 | `/publicar`, `/project/[slug]/editar` | **Formulários** | Publicar (requer login) e editar (só o dono). |
+| `/perfil/editar` | **Perfil** | Editar o próprio nome e bio. |
 
 A tela principal é a **1b** (placar de ranking); as telas internas seguem a
 direção visual da 1b, conforme o protótipo de referência.
@@ -29,7 +30,11 @@ direção visual da 1b, conforme o protótipo de referência.
   sessão por cookie `httpOnly` — sem serviços externos.
 - **Publicar** exige login; o autor vem da conta. **Editar/excluir** só o dono.
 - **Voto persistente e por usuário**: no máximo um voto por projeto por conta.
-- API CRUD sob `/api/projects` (+ `/vote`) e `/api/auth/{register,login,logout}`.
+- **Perfil editável** (nome/bio); o perfil é calculado dos votos recebidos.
+- **Screenshot** do projeto guardado no banco e **otimizado no upload** com
+  `sharp` (redimensiona até 1200×800 e reencoda em WebP).
+- API CRUD sob `/api/projects` (+ `/vote`, `/image`), `/api/profile` e
+  `/api/auth/{register,login,logout}`.
 
 ## Rodando localmente
 

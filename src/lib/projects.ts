@@ -314,8 +314,8 @@ export function resolveDev(rawHandle: string): Dev | undefined {
   const authored = listProjects().filter((p) => p.handle.replace(/^@/, '').toLowerCase() === key);
 
   const account = getDb()
-    .prepare('SELECT name, handle FROM users WHERE handle = ?')
-    .get(key) as { name: string; handle: string } | undefined;
+    .prepare('SELECT name, handle, bio FROM users WHERE handle = ?')
+    .get(key) as { name: string; handle: string; bio: string } | undefined;
 
   if (authored.length === 0 && !account) return undefined;
 
@@ -330,12 +330,13 @@ export function resolveDev(rawHandle: string): Dev | undefined {
   const xp = votes + projectCount * 100;
   const level = levelForXp(xp);
 
-  // Categorias distintas viram a bio.
+  // Bio personalizada da conta tem prioridade; senão, é gerada das categorias.
   const cats = [...new Set(authored.map((p) => p.cat).filter(Boolean))];
-  const bio =
+  const generatedBio =
     projectCount === 0
       ? 'Ainda não publicou projetos na bancada.'
       : `Constrói ${cats.join(', ')} na bancada. ${projectCount} projeto${projectCount > 1 ? 's' : ''} publicado${projectCount > 1 ? 's' : ''}.`;
+  const bio = account?.bio?.trim() ? account.bio.trim() : generatedBio;
 
   return {
     handle,
