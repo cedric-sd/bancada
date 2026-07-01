@@ -31,13 +31,15 @@ direção visual da 1b, conforme o protótipo de referência.
   sessão por cookie `httpOnly` — sem serviços externos.
 - **Publicar** exige login; o autor vem da conta. **Editar/excluir** só o dono.
 - **Voto persistente e por usuário**: no máximo um voto por projeto por conta.
+- **Reviews reais**: avaliações (1–5 estrelas + texto) da comunidade, uma por
+  usuário por projeto; não é possível avaliar o próprio projeto.
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
 - **Ordenação do placar** em abas: `top` (mais votados), `novos` (recentes) e
   `alta` (mais votos nos últimos 7 dias) — via `?ordem=`.
 - **Screenshot** do projeto e **avatar** do usuário guardados no banco e
   **otimizados no upload** com `sharp` (redimensiona e reencoda em WebP).
-- API CRUD sob `/api/projects` (+ `/vote`, `/image`), `/api/profile` e
-  `/api/auth/{register,login,logout}`.
+- API CRUD sob `/api/projects` (+ `/vote`, `/image`, `/reviews`),
+  `/api/profile` e `/api/auth/{register,login,logout}`.
 
 ## Rodando localmente
 

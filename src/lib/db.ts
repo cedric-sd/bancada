@@ -75,6 +75,18 @@ function init(): Database.Database {
       data       BLOB    NOT NULL,
       updated_at TEXT    NOT NULL DEFAULT (datetime('now'))
     );
+
+    -- Avaliações da comunidade (uma por usuário por projeto).
+    CREATE TABLE IF NOT EXISTS reviews (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      stars      INTEGER NOT NULL,
+      text       TEXT    NOT NULL DEFAULT '',
+      created_at TEXT    NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT    NOT NULL DEFAULT (datetime('now')),
+      UNIQUE (project_id, user_id)
+    );
   `);
 
   // Migrações para bancos criados antes destas colunas.
