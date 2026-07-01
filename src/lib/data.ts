@@ -23,13 +23,6 @@ export type Project = {
   hasImage: boolean;
 };
 
-export type Review = {
-  name: string;
-  handle: string;
-  initials: string;
-  stars: number;
-  text: string;
-};
 
 export type Achievement = {
   label: string;
@@ -204,34 +197,6 @@ export const seedProjects: SeedProject[] = [
     xpForAuthor: '+45',
   },
 ];
-
-export const reviewsBySlug: Record<string, Review[]> = {
-  lumen: [
-    {
-      name: 'Théo Salles',
-      handle: '@theos',
-      initials: 'TS',
-      stars: 5,
-      text: 'Troquei meu setup inteiro por causa do preview ao vivo. Absurdo de bom.',
-    },
-    {
-      name: 'Bia Ramos',
-      handle: '@biar',
-      initials: 'BR',
-      stars: 5,
-      text: 'Importou meus temas antigos sem reclamar. Levei dois minutos no total.',
-    },
-    {
-      name: 'Davi Lin',
-      handle: '@davilin',
-      initials: 'DL',
-      stars: 4,
-      text: 'Faltou export pro Windows Terminal, mas o resto é impecável.',
-    },
-  ],
-};
-
-export const getReviews = (slug: string): Review[] => reviewsBySlug[slug] ?? [];
 
 /** Categorias sugeridas no formulário de publicação. */
 export const categories = [

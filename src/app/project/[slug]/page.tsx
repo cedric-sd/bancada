@@ -7,9 +7,10 @@ import Avatar from '@/components/Avatar';
 import DarkButton from '@/components/DarkButton';
 import VoteButton from '@/components/VoteButton';
 import ReviewCard from '@/components/ReviewCard';
+import ReviewForm from '@/components/ReviewForm';
 import DeleteProjectButton from '@/components/DeleteProjectButton';
-import { getReviews } from '@/lib/data';
 import { getProjectBySlug } from '@/lib/projects';
+import { listReviews, reviewStats, getUserReview } from '@/lib/reviews';
 import { getCurrentUser, userHasAvatar } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
@@ -43,7 +44,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const user = await getCurrentUser();
   const project = getProjectBySlug(slug, user?.id);
   if (!project) notFound();
-  const reviews = getReviews(slug);
+  const reviews = listReviews(slug);
+  const stats = reviewStats(slug);
+  const myReview = user ? getUserReview(slug, user.id) : undefined;
   const devHandle = project.handle.replace(/^@/, '');
   const isOwner = !!user && project.ownerId === user.id;
   const authorHasAvatar = userHasAvatar(devHandle);
@@ -179,18 +182,91 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
       </div>
 
       {/* reviews */}
-      {reviews.length > 0 ? (
-        <div style={{ marginTop: 22 }}>
-          <div style={{ font: '700 11px var(--font-mono)', letterSpacing: '.14em', color: 'rgba(40,30,10,.6)', marginBottom: 13 }}>
+      <div style={{ marginTop: 22 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'baseline',
+            justifyContent: 'space-between',
+            gap: 10,
+            marginBottom: 13,
+          }}
+        >
+          <div style={{ font: '700 11px var(--font-mono)', letterSpacing: '.14em', color: 'rgba(40,30,10,.6)' }}>
             REVIEWS DA COMUNIDADE
           </div>
+          {stats.count > 0 ? (
+            <div style={{ font: '700 11px var(--font-mono)', color: '#221c12' }}>
+              <span style={{ color: '#c8951f' }}>★</span> {stats.average.toFixed(1)} ·{' '}
+              <span style={{ color: 'rgba(40,30,10,.55)' }}>
+                {stats.count} avaliaç{stats.count === 1 ? 'ão' : 'ões'}
+              </span>
+            </div>
+          ) : null}
+        </div>
+
+        {/* formulário / chamada para avaliar */}
+        {user ? (
+          isOwner ? (
+            <div
+              style={{
+                font: '500 12px var(--font-mono)',
+                color: 'rgba(40,30,10,.55)',
+                background: '#efe6cd',
+                border: '1px solid #cbb787',
+                borderRadius: 8,
+                padding: '11px 13px',
+                marginBottom: 14,
+              }}
+            >
+              Você é o autor deste projeto — avaliações vêm da comunidade.
+            </div>
+          ) : (
+            <div style={{ marginBottom: 16 }}>
+              <ReviewForm
+                slug={slug}
+                initialStars={myReview?.stars ?? 0}
+                initialText={myReview?.text ?? ''}
+                hasReview={!!myReview}
+              />
+            </div>
+          )
+        ) : (
+          <div
+            style={{
+              font: '500 12px var(--font-mono)',
+              color: 'rgba(40,30,10,.6)',
+              background: '#efe6cd',
+              border: '1px solid #cbb787',
+              borderRadius: 8,
+              padding: '11px 13px',
+              marginBottom: 14,
+            }}
+          >
+            <Link href={`/entrar?next=/project/${slug}`} style={{ color: '#b23a2a', fontWeight: 700 }}>
+              Entre
+            </Link>{' '}
+            para deixar sua avaliação.
+          </div>
+        )}
+
+        {reviews.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
             {reviews.map((r, i) => (
-              <ReviewCard key={r.handle} review={r} rotate={i % 2 === 0 ? -0.4 : 0.5} />
+              <ReviewCard
+                key={r.id}
+                review={r}
+                rotate={i % 2 === 0 ? -0.4 : 0.5}
+                mine={!!user && r.userId === user.id}
+              />
             ))}
           </div>
-        </div>
-      ) : null}
+        ) : (
+          <div style={{ font: '400 14px/1.5 var(--font-news)', color: '#5a4f3c' }}>
+            Ainda não há avaliações. Seja o primeiro!
+          </div>
+        )}
+      </div>
     </Board>
   );
 }
