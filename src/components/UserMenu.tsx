@@ -61,6 +61,10 @@ export default function UserMenu({ user }: { user: User | null }) {
           </div>
         </Link>
         <span style={{ width: 1, height: 20, background: 'rgba(60,45,20,.2)' }} />
+        <Link href="/meus-projetos" style={{ font: '600 10px var(--font-mono)', color: 'rgba(40,30,10,.55)' }}>
+          projetos
+        </Link>
+        <span style={{ width: 1, height: 20, background: 'rgba(60,45,20,.2)' }} />
         <LogoutButton />
       </div>
       <DarkButton href="/publicar">+ Publicar</DarkButton>
