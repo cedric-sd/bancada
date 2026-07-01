@@ -48,13 +48,23 @@ export default function RankRow({ project, authed }: { project: Project; authed:
           width: 50,
           height: 50,
           borderRadius: 7,
+          overflow: 'hidden',
           background:
             'repeating-linear-gradient(45deg,#d8c49a 0 7px,rgba(0,0,0,.05) 7px 14px)',
           boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.1)',
           flex: 'none',
         }}
         aria-label={`Abrir ${project.name}`}
-      />
+      >
+        {project.hasImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`/api/projects/${project.slug}/image`}
+            alt=""
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : null}
+      </Link>
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>

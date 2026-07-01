@@ -58,6 +58,14 @@ function init(): Database.Database {
       created_at TEXT    NOT NULL DEFAULT (datetime('now')),
       PRIMARY KEY (user_id, project_id)
     );
+
+    -- Screenshot do projeto (um por projeto), guardado no próprio banco.
+    CREATE TABLE IF NOT EXISTS project_images (
+      project_id INTEGER PRIMARY KEY REFERENCES projects(id) ON DELETE CASCADE,
+      mime       TEXT    NOT NULL,
+      data       BLOB    NOT NULL,
+      updated_at TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   // Migração para bancos criados antes da coluna owner_id.
