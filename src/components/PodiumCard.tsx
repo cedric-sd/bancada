@@ -3,6 +3,7 @@ import type { Project } from '@/lib/data';
 import VoteButton from './VoteButton';
 import Stamp from './Stamp';
 import Thumb from './Thumb';
+import Rating from './Rating';
 
 const medals = {
   1: {
@@ -127,6 +128,12 @@ export default function PodiumCard({
       <div style={{ font: '400 12px/1.3 var(--font-news)', color: '#5a4f3c' }}>
         {project.blurb}
       </div>
+
+      {project.reviewCount > 0 ? (
+        <div style={{ marginTop: 6 }}>
+          <Rating rating={project.rating} count={project.reviewCount} size={featured ? 11 : 10} />
+        </div>
+      ) : null}
 
       <div
         style={{

@@ -12,7 +12,7 @@ Tailwind CSS v4), iniciado via `create-next-app`.
 
 | Rota | Tela | Descrição |
 | --- | --- | --- |
-| `/` | **Placar (1b)** | Tela principal: abas **Top / Novos / Em alta**, pódio (top 3), lista ranqueada, conta e ação de publicar. |
+| `/` | **Placar (1b)** | Tela principal: abas **Top / Novos / Em alta**, **busca** e **filtro por categoria**, pódio (top 3), lista ranqueada (com média de estrelas), conta e ação de publicar. |
 | `/project/[slug]` | **Detalhe (1d)** | Hero, estatísticas, ações físicas (votar/abrir), descrição, tags e reviews da comunidade. |
 | `/dev/[handle]` | **Perfil (1e)** | Nível, barra de XP, conquistas e projetos publicados do dev. |
 | `/entrar`, `/cadastrar` | **Conta** | Login e cadastro (handle + senha). |
@@ -36,6 +36,8 @@ direção visual da 1b, conforme o protótipo de referência.
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
 - **Ordenação do placar** em abas: `top` (mais votados), `novos` (recentes) e
   `alta` (mais votos nos últimos 7 dias) — via `?ordem=`.
+- **Busca** (`?q=` em nome/resumo/autor) e **filtro por categoria** (`?cat=`);
+  a **média de estrelas** aparece nos cards do placar.
 - **Screenshot** do projeto e **avatar** do usuário guardados no banco e
   **otimizados no upload** com `sharp` (redimensiona e reencoda em WebP).
 - API CRUD sob `/api/projects` (+ `/vote`, `/image`, `/reviews`),

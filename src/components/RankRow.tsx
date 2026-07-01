@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Project } from '@/lib/data';
 import VoteButton from './VoteButton';
+import Rating from './Rating';
 
 /**
  * Linha do placar (posições fora do pódio). Voto físico + rank gigante.
@@ -83,6 +84,7 @@ export default function RankRow({ project, authed }: { project: Project; authed:
           >
             {project.cat}
           </span>
+          <Rating rating={project.rating} count={project.reviewCount} size={10} />
         </div>
         <div style={{ font: '400 13px/1.3 var(--font-news)', color: '#5a4f3c', marginTop: 2 }}>
           {project.blurb}

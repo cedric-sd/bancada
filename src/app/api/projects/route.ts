@@ -8,12 +8,15 @@ export const dynamic = 'force-dynamic';
 
 const SORTS: SortKey[] = ['top', 'novos', 'alta'];
 
-// GET /api/projects?ordem=top|novos|alta — lista os projetos na ordem pedida.
+// GET /api/projects?ordem=&cat=&q= — lista com ordenação, filtro e busca.
 export async function GET(request: Request) {
-  const ordem = new URL(request.url).searchParams.get('ordem');
+  const sp = new URL(request.url).searchParams;
+  const ordem = sp.get('ordem');
   const sort: SortKey = SORTS.includes(ordem as SortKey) ? (ordem as SortKey) : 'top';
+  const cat = sp.get('cat') ?? undefined;
+  const q = sp.get('q') ?? undefined;
   const user = await getCurrentUser();
-  return NextResponse.json({ projects: listProjects(user?.id, sort) });
+  return NextResponse.json({ projects: listProjects(user?.id, { sort, cat, q }) });
 }
 
 // POST /api/projects — publica um novo projeto (requer login).
