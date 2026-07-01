@@ -1,24 +1,24 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import Board from '@/components/Board';
-import ProjectForm from '@/components/ProjectForm';
-import { getCurrentUser } from '@/lib/auth';
+import AuthForm from '@/components/AuthForm';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PublicarPage() {
-  const user = await getCurrentUser();
-  if (!user) redirect('/entrar?next=/publicar');
-
+export default async function CadastrarPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
   return (
-    <Board maxWidth={740}>
+    <Board maxWidth={520}>
       <Link
         href="/"
         style={{ font: '500 10px var(--font-mono)', color: 'rgba(40,30,10,.6)', display: 'inline-block', marginBottom: 14 }}
       >
         ‹ voltar ao placar
       </Link>
-      <ProjectForm mode="create" />
+      <AuthForm mode="register" next={next} />
     </Board>
   );
 }

@@ -1,18 +1,17 @@
-import Link from 'next/link';
 import Board from '@/components/Board';
 import Logo from '@/components/Logo';
-import DarkButton from '@/components/DarkButton';
-import Avatar from '@/components/Avatar';
+import UserMenu from '@/components/UserMenu';
 import PodiumCard from '@/components/PodiumCard';
 import RankRow from '@/components/RankRow';
-import { devs } from '@/lib/data';
 import { listProjects } from '@/lib/projects';
+import { getCurrentUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export default function Home() {
-  const me = devs.marakt;
-  const all = listProjects();
+export default async function Home() {
+  const user = await getCurrentUser();
+  const authed = !!user;
+  const all = listProjects(user?.id);
   const podium = all.slice(0, 3);
   const rest = all.slice(3);
 
@@ -30,38 +29,7 @@ export default function Home() {
         }}
       >
         <Logo subtitle="PLACAR DA SEMANA" />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Link
-            href={`/dev/${me.handle.replace(/^@/, '')}`}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              background: '#efe6cd',
-              border: '1px solid #bfa873',
-              borderRadius: 9,
-              padding: '6px 12px 6px 8px',
-              boxShadow: '0 2px 0 rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.6)',
-            }}
-          >
-            <Avatar initials={me.initials} size={26} />
-            <div>
-              <div style={{ font: '800 11px/1 var(--font-archivo)', color: '#221c12' }}>
-                Nível {me.level}
-              </div>
-              <div
-                style={{
-                  font: '500 8.5px/1 var(--font-mono)',
-                  color: 'rgba(40,30,10,.55)',
-                  marginTop: 2,
-                }}
-              >
-                {me.xp.toLocaleString('pt-BR')} XP
-              </div>
-            </div>
-          </Link>
-          <DarkButton href="/publicar">+ Publicar</DarkButton>
-        </div>
+        <UserMenu user={user} />
       </div>
 
       {/* podium */}
@@ -75,17 +43,17 @@ export default function Home() {
           flexWrap: 'wrap',
         }}
       >
-        {podium[1] ? <PodiumCard project={podium[1]} place={2} palette="cool" /> : null}
+        {podium[1] ? <PodiumCard project={podium[1]} place={2} palette="cool" authed={authed} /> : null}
         {podium[0] ? (
-          <PodiumCard project={podium[0]} place={1} palette="warm" note="líder · 3 sem." />
+          <PodiumCard project={podium[0]} place={1} palette="warm" note="líder · 3 sem." authed={authed} />
         ) : null}
-        {podium[2] ? <PodiumCard project={podium[2]} place={3} palette="sage" note="IA · CLI" /> : null}
+        {podium[2] ? <PodiumCard project={podium[2]} place={3} palette="sage" note="IA · CLI" authed={authed} /> : null}
       </div>
 
       {/* ranked list */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
         {rest.map((p) => (
-          <RankRow key={p.slug} project={p} />
+          <RankRow key={p.slug} project={p} authed={authed} />
         ))}
       </div>
     </Board>

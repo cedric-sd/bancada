@@ -14,6 +14,7 @@ function init(): Database.Database {
 
   const db = new Database(path.join(dir, 'bancada.db'));
   db.pragma('journal_mode = WAL');
+  db.pragma('foreign_keys = ON');
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS projects (
@@ -32,12 +33,46 @@ function init(): Database.Database {
       tags          TEXT    NOT NULL DEFAULT '[]',
       forks         TEXT    NOT NULL DEFAULT '0',
       xp_for_author TEXT    NOT NULL DEFAULT '+0',
+      owner_id      INTEGER,
       created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS users (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      handle        TEXT    UNIQUE NOT NULL,
+      name          TEXT    NOT NULL,
+      password_hash TEXT    NOT NULL,
+      created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS sessions (
+      token      TEXT    PRIMARY KEY,
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TEXT    NOT NULL DEFAULT (datetime('now')),
+      expires_at TEXT    NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS user_votes (
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+      created_at TEXT    NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (user_id, project_id)
     );
   `);
 
+  // Migração para bancos criados antes da coluna owner_id.
+  ensureColumn(db, 'projects', 'owner_id', 'INTEGER');
+
   seedIfEmpty(db);
   return db;
+}
+
+/** Adiciona uma coluna se ela ainda não existir (migração idempotente). */
+function ensureColumn(db: Database.Database, table: string, column: string, decl: string) {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+  if (!cols.some((c) => c.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${decl}`);
+  }
 }
 
 function seedIfEmpty(db: Database.Database) {

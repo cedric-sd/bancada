@@ -10,6 +10,7 @@ import ReviewCard from '@/components/ReviewCard';
 import DeleteProjectButton from '@/components/DeleteProjectButton';
 import { getReviews } from '@/lib/data';
 import { getProjectBySlug } from '@/lib/projects';
+import { getCurrentUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,10 +40,12 @@ const statCell = (value: string, label: string, color = '#221c12') => (
 
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const user = await getCurrentUser();
+  const project = getProjectBySlug(slug, user?.id);
   if (!project) notFound();
   const reviews = getReviews(slug);
   const devHandle = project.handle.replace(/^@/, '');
+  const isOwner = !!user && project.ownerId === user.id;
 
   return (
     <Board maxWidth={740}>
@@ -59,12 +62,14 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         <Link href="/" style={{ font: '500 10px var(--font-mono)', color: 'rgba(40,30,10,.6)' }}>
           ‹ voltar ao placar
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Link href={`/project/${slug}/editar`} style={{ font: '600 11px var(--font-mono)', color: 'rgba(40,30,10,.6)' }}>
-            editar
-          </Link>
-          <DeleteProjectButton slug={slug} name={project.name} />
-        </div>
+        {isOwner ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <Link href={`/project/${slug}/editar`} style={{ font: '600 11px var(--font-mono)', color: 'rgba(40,30,10,.6)' }}>
+              editar
+            </Link>
+            <DeleteProjectButton slug={slug} name={project.name} />
+          </div>
+        ) : null}
       </div>
 
       <div
@@ -116,7 +121,13 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             </Link>
           </div>
           <div style={{ display: 'flex', gap: 10, flex: 'none' }}>
-            <VoteButton votes={project.votes} slug={project.slug} variant="detail" />
+            <VoteButton
+              votes={project.votes}
+              slug={project.slug}
+              voted={project.voted}
+              authed={!!user}
+              variant="detail"
+            />
             <DarkButton size="lg">
               ABRIR <span style={{ fontSize: 14 }}>↗</span>
             </DarkButton>
