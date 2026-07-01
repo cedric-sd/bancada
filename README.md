@@ -17,7 +17,8 @@ Tailwind CSS v4), iniciado via `create-next-app`.
 | `/dev/[handle]` | **Perfil (1e)** | Nível, barra de XP, conquistas e projetos publicados do dev. |
 | `/entrar`, `/cadastrar` | **Conta** | Login e cadastro (handle + senha). |
 | `/publicar`, `/project/[slug]/editar` | **Formulários** | Publicar (requer login) e editar (só o dono). |
-| `/perfil/editar` | **Perfil** | Editar o próprio nome e bio. |
+| `/perfil/editar` | **Perfil** | Editar o próprio nome, bio e avatar. |
+| `/meus-projetos` | **Meus projetos** | Gerenciar (ver/editar/excluir) os projetos que você publicou. |
 
 A tela principal é a **1b** (placar de ranking); as telas internas seguem a
 direção visual da 1b, conforme o protótipo de referência.

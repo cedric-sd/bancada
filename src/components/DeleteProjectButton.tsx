@@ -15,7 +15,15 @@ const linkStyle = {
 /**
  * Exclui o projeto via DELETE na API, com confirmação inline (dois passos).
  */
-export default function DeleteProjectButton({ slug, name }: { slug: string; name: string }) {
+export default function DeleteProjectButton({
+  slug,
+  name,
+  redirectTo = '/',
+}: {
+  slug: string;
+  name: string;
+  redirectTo?: string;
+}) {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -27,7 +35,7 @@ export default function DeleteProjectButton({ slug, name }: { slug: string; name
     try {
       const res = await fetch(`/api/projects/${slug}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('falha');
-      router.push('/');
+      router.push(redirectTo);
       router.refresh();
     } catch {
       setError('Não foi possível excluir. Tente novamente.');

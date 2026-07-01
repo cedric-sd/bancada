@@ -132,6 +132,11 @@ export function getProjectBySlug(slug: string, userId?: number | null): Project 
   return listProjects(userId).find((p) => p.slug === slug);
 }
 
+/** Projetos publicados por um usuário, mantendo o rank global do placar. */
+export function listProjectsByOwner(userId: number): Project[] {
+  return listProjects(userId).filter((p) => p.ownerId === userId);
+}
+
 export function createProject(input: CreateProjectInput): Project {
   const db = getDb();
   const name = input.name.trim();
