@@ -5,10 +5,16 @@ import DarkButton from '@/components/DarkButton';
 import Avatar from '@/components/Avatar';
 import PodiumCard from '@/components/PodiumCard';
 import RankRow from '@/components/RankRow';
-import { podium, rest, devs } from '@/lib/data';
+import { devs } from '@/lib/data';
+import { listProjects } from '@/lib/projects';
+
+export const dynamic = 'force-dynamic';
 
 export default function Home() {
   const me = devs.marakt;
+  const all = listProjects();
+  const podium = all.slice(0, 3);
+  const rest = all.slice(3);
 
   return (
     <Board>
@@ -54,7 +60,7 @@ export default function Home() {
               </div>
             </div>
           </Link>
-          <DarkButton>+ Publicar</DarkButton>
+          <DarkButton href="/publicar">+ Publicar</DarkButton>
         </div>
       </div>
 
@@ -69,9 +75,11 @@ export default function Home() {
           flexWrap: 'wrap',
         }}
       >
-        <PodiumCard project={podium[1]} place={2} palette="cool" />
-        <PodiumCard project={podium[0]} place={1} palette="warm" note="líder · 3 sem." />
-        <PodiumCard project={podium[2]} place={3} palette="sage" note="IA · CLI" />
+        {podium[1] ? <PodiumCard project={podium[1]} place={2} palette="cool" /> : null}
+        {podium[0] ? (
+          <PodiumCard project={podium[0]} place={1} palette="warm" note="líder · 3 sem." />
+        ) : null}
+        {podium[2] ? <PodiumCard project={podium[2]} place={3} palette="sage" note="IA · CLI" /> : null}
       </div>
 
       {/* ranked list */}

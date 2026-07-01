@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Board from '@/components/Board';
 import Stamp from '@/components/Stamp';
-import { resolveDev, getProject } from '@/lib/data';
+import { resolveDev, getProjectBySlug } from '@/lib/projects';
+
+export const dynamic = 'force-dynamic';
 
 const statCell = (value: string, label: string, color = '#221c12') => (
   <div
@@ -29,7 +31,7 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
 
   const pct = Math.min(100, Math.round((dev.xp / dev.xpNext) * 100));
   const remaining = (dev.xpNext - dev.xp).toLocaleString('pt-BR');
-  const myProjects = dev.projectSlugs.map(getProject).filter((p) => p !== undefined);
+  const myProjects = dev.projectSlugs.map(getProjectBySlug).filter((p) => p !== undefined);
 
   return (
     <Board maxWidth={740}>
