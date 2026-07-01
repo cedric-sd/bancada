@@ -49,7 +49,9 @@ export type Dev = {
 
 const slugify = (s: string) => s.toLowerCase();
 
-export const projects: Project[] = [
+// Dados iniciais que semeiam o banco na primeira execução. A partir daí a
+// fonte de verdade é o SQLite (ver src/lib/db.ts e src/lib/projects.ts).
+export const seedProjects: Project[] = [
   {
     rank: 1,
     slug: slugify('Lumen'),
@@ -244,59 +246,16 @@ export const devs: Record<string, Dev> = {
   },
 };
 
-// Soma de votos "1.428" + "655" → "2.083" (separador pt-BR).
-const sumVotes = (list: Project[]) =>
-  list
-    .reduce((acc, p) => acc + (parseInt(p.votes.replace(/\D/g, ''), 10) || 0), 0)
-    .toLocaleString('pt-BR');
-
-/**
- * Resolve o perfil de um dev pelo handle. Devs com perfil rico vêm de `devs`;
- * para os demais autores, monta um perfil a partir dos projetos publicados.
- */
-export function resolveDev(rawHandle: string): Dev | undefined {
-  const key = rawHandle.replace(/^@/, '');
-  if (devs[key]) return devs[key];
-
-  const authored = projects.filter((p) => p.handle.replace(/^@/, '') === key);
-  if (authored.length === 0) return undefined;
-
-  const main = authored[0];
-  const level = Math.max(...authored.map((p) => p.lvl));
-  const initials = main.author
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-  const bestRank = Math.min(...authored.map((p) => p.rank));
-
-  return {
-    handle: main.handle,
-    name: main.author,
-    initials,
-    bio: 'Builder na bancada. Publica ferramentas para a comunidade.',
-    level,
-    xp: level * 200,
-    xpNext: (level + 1) * 200,
-    badge: bestRank <= 3 ? 'DESTAQUE' : 'BUILDER',
-    stats: { projects: authored.length, votes: sumVotes(authored), bestRank: `#${bestRank}` },
-    achievements: [
-      { label: 'EARLY BUILDER', color: '#9a6a1f', rotate: -3 },
-      ...(bestRank <= 3 ? [{ label: 'TOP 3', color: '#b23a2a', rotate: 3 }] : []),
-    ],
-    projectSlugs: authored.map((p) => p.slug),
-  };
-}
-
-export const getProject = (slug: string) => projects.find((p) => p.slug === slug);
-
-export const getDevByHandle = (handle: string) => {
-  const key = handle.replace(/^@/, '');
-  return devs[key];
-};
-
 export const getReviews = (slug: string): Review[] => reviewsBySlug[slug] ?? [];
 
-export const podium = projects.slice(0, 3);
-export const rest = projects.slice(3);
+/** Categorias sugeridas no formulário de publicação. */
+export const categories = [
+  'Terminal',
+  'Database',
+  'IA',
+  'Docs',
+  'Design',
+  'DevTools',
+  'CLI',
+  'Outros',
+];

@@ -7,11 +7,10 @@ import Avatar from '@/components/Avatar';
 import DarkButton from '@/components/DarkButton';
 import VoteButton from '@/components/VoteButton';
 import ReviewCard from '@/components/ReviewCard';
-import { getProject, getReviews, projects } from '@/lib/data';
+import { getReviews } from '@/lib/data';
+import { getProjectBySlug } from '@/lib/projects';
 
-export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
-}
+export const dynamic = 'force-dynamic';
 
 const statCell = (value: string, label: string, color = '#221c12') => (
   <div
@@ -39,7 +38,7 @@ const statCell = (value: string, label: string, color = '#221c12') => (
 
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const project = getProject(slug);
+  const project = getProjectBySlug(slug);
   if (!project) notFound();
   const reviews = getReviews(slug);
   const devHandle = project.handle.replace(/^@/, '');
