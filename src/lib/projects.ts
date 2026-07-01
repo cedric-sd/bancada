@@ -21,6 +21,8 @@ type Row = {
   created_at: string;
   voted?: number;
   has_image?: number;
+  rating?: number;
+  review_count?: number;
 };
 
 export type CreateProjectInput = {
@@ -68,6 +70,8 @@ function toProject(row: Row, rank: number): Project {
     ownerId: row.owner_id,
     voted: !!row.voted,
     hasImage: !!row.has_image,
+    rating: row.rating ?? 0,
+    reviewCount: row.review_count ?? 0,
   };
 }
 
@@ -105,26 +109,51 @@ const ORDER_BY: Record<SortKey, string> = {
   alta: 'recent DESC, p.votes DESC, p.id ASC',
 };
 
+export type ListOptions = { sort?: SortKey; cat?: string; q?: string };
+
 /**
  * Lista os projetos numa ordem (aba): `top` (mais votados), `novos` (recentes)
- * ou `alta` (mais votos nos últimos 7 dias). O rank é a posição na ordem.
+ * ou `alta` (mais votos nos últimos 7 dias), com filtro opcional por categoria
+ * (`cat`) e busca (`q` em nome/resumo/autor). O rank é a posição na ordem.
  * Se `userId` for informado, marca `voted` para os projetos votados por ele.
  */
-export function listProjects(userId?: number | null, sort: SortKey = 'top'): Project[] {
+export function listProjects(userId?: number | null, opts: ListOptions = {}): Project[] {
+  const sort = opts.sort ?? 'top';
   const orderBy = ORDER_BY[sort] ?? ORDER_BY.top;
+
+  const where: string[] = [];
+  const bind: Record<string, unknown> = { userId: userId ?? -1 };
+
+  const cat = opts.cat?.trim();
+  if (cat && cat !== 'Todos') {
+    where.push('p.cat = @cat');
+    bind.cat = cat;
+  }
+  const q = opts.q?.trim();
+  if (q) {
+    where.push('(p.name LIKE @q OR p.blurb LIKE @q OR p.author LIKE @q)');
+    bind.q = `%${q}%`;
+  }
+  const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
+
   const rows = getDb()
     .prepare(
       `SELECT p.*,
               (uv.user_id IS NOT NULL) AS voted,
               (pi.project_id IS NOT NULL) AS has_image,
+              COALESCE(rv.avg, 0) AS rating,
+              COALESCE(rv.cnt, 0) AS review_count,
               (SELECT COUNT(*) FROM user_votes v
                  WHERE v.project_id = p.id AND v.created_at > datetime('now', '-7 days')) AS recent
        FROM projects p
        LEFT JOIN user_votes uv ON uv.project_id = p.id AND uv.user_id = @userId
        LEFT JOIN project_images pi ON pi.project_id = p.id
+       LEFT JOIN (SELECT project_id, AVG(stars) AS avg, COUNT(*) AS cnt FROM reviews GROUP BY project_id) rv
+         ON rv.project_id = p.id
+       ${whereSql}
        ORDER BY ${orderBy}`,
     )
-    .all({ userId: userId ?? -1 }) as Row[];
+    .all(bind) as Row[];
   return rows.map((row, i) => toProject(row, i + 1));
 }
 
