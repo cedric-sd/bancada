@@ -32,14 +32,17 @@ export default function ProfileForm({
   handle,
   initialName,
   initialBio,
+  hasAvatar = false,
 }: {
   handle: string; // sem @
   initialName: string;
   initialBio: string;
+  hasAvatar?: boolean;
 }) {
   const router = useRouter();
   const [name, setName] = useState(initialName);
   const [bio, setBio] = useState(initialBio);
+  const [avatar, setAvatar] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -63,6 +66,21 @@ export default function ProfileForm({
         setSubmitting(false);
         return;
       }
+
+      // Envia o avatar (se escolhido) depois de salvar o perfil.
+      if (avatar) {
+        const fd = new FormData();
+        fd.append('avatar', avatar);
+        const up = await fetch('/api/profile/avatar', { method: 'POST', body: fd });
+        if (!up.ok) {
+          const upErr = await up.json().catch(() => ({}));
+          setServerError(`Perfil salvo, mas o avatar falhou: ${upErr.error ?? 'tente reenviar.'}`);
+          setSubmitting(false);
+          router.refresh();
+          return;
+        }
+      }
+
       router.push(`/dev/${handle}`);
       router.refresh();
     } catch {
@@ -102,6 +120,23 @@ export default function ProfileForm({
           {errors.name ? (
             <div style={{ font: '600 10px var(--font-mono)', color: '#b23a2a', marginTop: 5 }}>{errors.name}</div>
           ) : null}
+        </div>
+
+        <div>
+          <label style={labelStyle}>AVATAR (PNG, JPG, WEBP OU GIF · ATÉ 3 MB)</label>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            onChange={(e) => setAvatar(e.target.files?.[0] ?? null)}
+            style={{ ...fieldStyle, padding: '8px 12px', font: '500 12px var(--font-mono)' }}
+          />
+          <div style={{ font: '500 10px var(--font-mono)', color: 'rgba(40,30,10,.5)', marginTop: 6 }}>
+            {avatar
+              ? `selecionado: ${avatar.name}`
+              : hasAvatar
+                ? 'já tem um avatar — escolha outro para substituir.'
+                : 'opcional: recortado em um quadrado.'}
+          </div>
         </div>
 
         <div>

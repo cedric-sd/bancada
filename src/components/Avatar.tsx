@@ -14,15 +14,17 @@ function pick(initials: string) {
 }
 
 /**
- * Avatar circular com iniciais, no estilo "carimbo" da bancada.
+ * Avatar circular com iniciais (estilo "carimbo") ou a foto do usuário via `src`.
  */
 export default function Avatar({
   initials,
   size = 22,
+  src,
   style,
 }: {
   initials: string;
   size?: number;
+  src?: string;
   style?: CSSProperties;
 }) {
   return (
@@ -31,6 +33,7 @@ export default function Avatar({
         width: size,
         height: size,
         borderRadius: '50%',
+        overflow: 'hidden',
         background: pick(initials),
         display: 'grid',
         placeItems: 'center',
@@ -41,7 +44,12 @@ export default function Avatar({
         ...style,
       }}
     >
-      {initials}
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt={initials} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      ) : (
+        initials
+      )}
     </div>
   );
 }

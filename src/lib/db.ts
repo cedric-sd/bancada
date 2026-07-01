@@ -67,6 +67,14 @@ function init(): Database.Database {
       data       BLOB    NOT NULL,
       updated_at TEXT    NOT NULL DEFAULT (datetime('now'))
     );
+
+    -- Avatar do usuário (um por conta).
+    CREATE TABLE IF NOT EXISTS user_avatars (
+      user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      mime       TEXT    NOT NULL,
+      data       BLOB    NOT NULL,
+      updated_at TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   // Migrações para bancos criados antes destas colunas.

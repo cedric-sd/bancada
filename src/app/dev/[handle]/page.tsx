@@ -100,6 +100,7 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
                 width: 96,
                 height: 96,
                 borderRadius: 2,
+                overflow: 'hidden',
                 background: 'radial-gradient(circle at 38% 32%,#d7b48a,#b07f54 70%,#7d5836)',
                 display: 'grid',
                 placeItems: 'center',
@@ -108,7 +109,16 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
                 boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.12)',
               }}
             >
-              {dev.initials}
+              {dev.hasAvatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={`/api/users/${dev.handle.replace(/^@/, '')}/avatar`}
+                  alt={dev.name}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                dev.initials
+              )}
             </div>
             <div style={{ font: '500 9px var(--font-mono)', color: 'rgba(40,30,10,.5)', textAlign: 'center', marginTop: 6 }}>
               {dev.handle}

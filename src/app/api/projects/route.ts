@@ -1,15 +1,19 @@
 import { NextResponse } from 'next/server';
-import { createProject, listProjects, type CreateProjectInput } from '@/lib/projects';
+import { createProject, listProjects, type CreateProjectInput, type SortKey } from '@/lib/projects';
 import { getCurrentUser } from '@/lib/auth';
 
 // Rotas de dados sempre no runtime Node (better-sqlite3 é nativo) e dinâmicas.
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// GET /api/projects — lista todos os projetos, já ranqueados por votos.
-export async function GET() {
+const SORTS: SortKey[] = ['top', 'novos', 'alta'];
+
+// GET /api/projects?ordem=top|novos|alta — lista os projetos na ordem pedida.
+export async function GET(request: Request) {
+  const ordem = new URL(request.url).searchParams.get('ordem');
+  const sort: SortKey = SORTS.includes(ordem as SortKey) ? (ordem as SortKey) : 'top';
   const user = await getCurrentUser();
-  return NextResponse.json({ projects: listProjects(user?.id) });
+  return NextResponse.json({ projects: listProjects(user?.id, sort) });
 }
 
 // POST /api/projects — publica um novo projeto (requer login).

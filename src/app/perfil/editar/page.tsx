@@ -21,7 +21,12 @@ export default async function EditarPerfilPage() {
       >
         ‹ voltar ao perfil
       </Link>
-      <ProfileForm handle={handle} initialName={account.name} initialBio={account.bio} />
+      <ProfileForm
+        handle={handle}
+        initialName={account.name}
+        initialBio={account.bio}
+        hasAvatar={user.hasAvatar}
+      />
     </Board>
   );
 }

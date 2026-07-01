@@ -11,9 +11,16 @@ export type User = {
   handle: string; // com @, para exibição
   name: string;
   initials: string;
+  hasAvatar: boolean;
 };
 
-type UserRow = { id: number; handle: string; name: string; password_hash: string };
+type UserRow = {
+  id: number;
+  handle: string;
+  name: string;
+  password_hash: string;
+  has_avatar?: number;
+};
 
 const withAt = (handle: string) => `@${handle.replace(/^@+/, '')}`;
 
@@ -30,7 +37,13 @@ export function initialsOf(name: string): string {
 }
 
 function toUser(row: UserRow): User {
-  return { id: row.id, handle: withAt(row.handle), name: row.name, initials: initialsOf(row.name) };
+  return {
+    id: row.id,
+    handle: withAt(row.handle),
+    name: row.name,
+    initials: initialsOf(row.name),
+    hasAvatar: !!row.has_avatar,
+  };
 }
 
 // --- senha (scrypt nativo, sem dependências externas) ---
@@ -69,7 +82,13 @@ export function createUser(name: string, handle: string, password: string): Crea
     .run(h, name.trim(), hashPassword(password));
   return {
     ok: true,
-    user: { id: Number(info.lastInsertRowid), handle: withAt(h), name: name.trim(), initials: initialsOf(name) },
+    user: {
+      id: Number(info.lastInsertRowid),
+      handle: withAt(h),
+      name: name.trim(),
+      initials: initialsOf(name),
+      hasAvatar: false,
+    },
   };
 }
 
@@ -116,12 +135,46 @@ function userFromToken(token: string | undefined): User | null {
   if (!token) return null;
   const row = getDb()
     .prepare(
-      `SELECT u.id, u.handle, u.name, u.password_hash
-       FROM sessions s JOIN users u ON u.id = s.user_id
+      `SELECT u.id, u.handle, u.name, u.password_hash,
+              (av.user_id IS NOT NULL) AS has_avatar
+       FROM sessions s
+       JOIN users u ON u.id = s.user_id
+       LEFT JOIN user_avatars av ON av.user_id = u.id
        WHERE s.token = ? AND s.expires_at > datetime('now')`,
     )
     .get(token) as UserRow | undefined;
   return row ? toUser(row) : null;
+}
+
+// --- avatar ---
+
+export function setUserAvatar(userId: number, mime: string, data: Buffer): void {
+  getDb()
+    .prepare(
+      `INSERT INTO user_avatars (user_id, mime, data, updated_at)
+       VALUES (@id, @mime, @data, datetime('now'))
+       ON CONFLICT(user_id) DO UPDATE SET mime = @mime, data = @data, updated_at = datetime('now')`,
+    )
+    .run({ id: userId, mime, data });
+}
+
+export function getUserAvatarByHandle(handle: string): { mime: string; data: Buffer } | undefined {
+  return getDb()
+    .prepare(
+      `SELECT av.mime AS mime, av.data AS data
+       FROM user_avatars av JOIN users u ON u.id = av.user_id
+       WHERE u.handle = ?`,
+    )
+    .get(cleanHandle(handle)) as { mime: string; data: Buffer } | undefined;
+}
+
+export function userHasAvatar(handle: string): boolean {
+  const row = getDb()
+    .prepare(
+      `SELECT 1 FROM user_avatars av JOIN users u ON u.id = av.user_id WHERE u.handle = ?`,
+    )
+    .get(cleanHandle(handle));
+  return !!row;
 }
 
 export const SESSION_MAX_AGE = SESSION_DAYS * 864e2;

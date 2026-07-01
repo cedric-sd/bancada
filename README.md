@@ -12,7 +12,7 @@ Tailwind CSS v4), iniciado via `create-next-app`.
 
 | Rota | Tela | Descrição |
 | --- | --- | --- |
-| `/` | **Placar (1b)** | Tela principal: pódio (top 3), lista ranqueada, conta do usuário e ação de publicar. |
+| `/` | **Placar (1b)** | Tela principal: abas **Top / Novos / Em alta**, pódio (top 3), lista ranqueada, conta e ação de publicar. |
 | `/project/[slug]` | **Detalhe (1d)** | Hero, estatísticas, ações físicas (votar/abrir), descrição, tags e reviews da comunidade. |
 | `/dev/[handle]` | **Perfil (1e)** | Nível, barra de XP, conquistas e projetos publicados do dev. |
 | `/entrar`, `/cadastrar` | **Conta** | Login e cadastro (handle + senha). |
@@ -30,9 +30,11 @@ direção visual da 1b, conforme o protótipo de referência.
   sessão por cookie `httpOnly` — sem serviços externos.
 - **Publicar** exige login; o autor vem da conta. **Editar/excluir** só o dono.
 - **Voto persistente e por usuário**: no máximo um voto por projeto por conta.
-- **Perfil editável** (nome/bio); o perfil é calculado dos votos recebidos.
-- **Screenshot** do projeto guardado no banco e **otimizado no upload** com
-  `sharp` (redimensiona até 1200×800 e reencoda em WebP).
+- **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
+- **Ordenação do placar** em abas: `top` (mais votados), `novos` (recentes) e
+  `alta` (mais votos nos últimos 7 dias) — via `?ordem=`.
+- **Screenshot** do projeto e **avatar** do usuário guardados no banco e
+  **otimizados no upload** com `sharp` (redimensiona e reencoda em WebP).
 - API CRUD sob `/api/projects` (+ `/vote`, `/image`), `/api/profile` e
   `/api/auth/{register,login,logout}`.
 

@@ -41,6 +41,7 @@ export type Dev = {
   handle: string;
   name: string;
   initials: string;
+  hasAvatar: boolean;
   bio: string;
   level: number;
   xp: number;
