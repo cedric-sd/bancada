@@ -17,6 +17,9 @@ export type Project = {
   tags: string[];
   forks: string;
   xpForAuthor: string;
+  // autenticação/propriedade
+  ownerId: number | null;
+  voted: boolean;
 };
 
 export type Review = {
@@ -51,7 +54,9 @@ const slugify = (s: string) => s.toLowerCase();
 
 // Dados iniciais que semeiam o banco na primeira execução. A partir daí a
 // fonte de verdade é o SQLite (ver src/lib/db.ts e src/lib/projects.ts).
-export const seedProjects: Project[] = [
+export type SeedProject = Omit<Project, 'ownerId' | 'voted'>;
+
+export const seedProjects: SeedProject[] = [
   {
     rank: 1,
     slug: slugify('Lumen'),

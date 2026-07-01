@@ -1,14 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-// Justificativa: os efeitos abaixo sincronizam com fontes externas (prop do
-// servidor e localStorage do cliente), onde setState é o padrão adequado.
-/* eslint-disable react-hooks/set-state-in-effect */
 
 const parse = (s: string) => parseInt(s.replace(/\D/g, ''), 10) || 0;
 const format = (n: number) => n.toLocaleString('pt-BR');
-const storageKey = (slug: string) => `bancada:voted:${slug}`;
 
 const lightFace = {
   background: 'linear-gradient(#f7f0dd,#e6d5ad)',
@@ -17,37 +13,35 @@ const lightFace = {
 } as const;
 
 /**
- * Botão de voto físico e persistente. O voto é gravado no banco via API; o
- * estado "já votei" fica no localStorage (por dispositivo, sem login). Após
- * votar, atualiza a rota para reordenar o placar.
+ * Botão de voto físico e persistente. O voto é gravado no banco por usuário
+ * (um por projeto). Sem login, leva à tela de entrar. Após votar, atualiza a
+ * rota para reordenar o placar.
  */
 export default function VoteButton({
   votes,
   slug,
+  voted,
+  authed,
   variant = 'column',
 }: {
   votes: string;
   slug: string;
+  voted: boolean;
+  authed: boolean;
   variant?: 'column' | 'pill' | 'detail' | 'lg';
 }) {
   const router = useRouter();
+  // Estado local sincronizado com o servidor via padrão de reset por prop.
   const [count, setCount] = useState(parse(votes));
-  const [voted, setVoted] = useState(false);
+  const [isVoted, setIsVoted] = useState(voted);
+  const [prev, setPrev] = useState({ votes, voted });
   const [pending, setPending] = useState(false);
 
-  // Mantém a contagem em sincronia quando o servidor reordena/atualiza.
-  useEffect(() => {
+  if (prev.votes !== votes || prev.voted !== voted) {
+    setPrev({ votes, voted });
     setCount(parse(votes));
-  }, [votes]);
-
-  // Recupera o estado "votado" deste dispositivo.
-  useEffect(() => {
-    try {
-      setVoted(localStorage.getItem(storageKey(slug)) === '1');
-    } catch {
-      // localStorage indisponível — segue sem estado persistido.
-    }
-  }, [slug]);
+    setIsVoted(voted);
+  }
 
   async function toggle(e: React.MouseEvent) {
     // Não navega quando o botão está dentro de um link (card do pódio).
@@ -55,30 +49,26 @@ export default function VoteButton({
     e.stopPropagation();
     if (pending) return;
 
-    const next = !voted;
+    if (!authed) {
+      router.push(`/entrar?next=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
+    const next = !isVoted;
     setPending(true);
-    // Atualização otimista.
-    setVoted(next);
+    setIsVoted(next);
     setCount((c) => Math.max(0, c + (next ? 1 : -1)));
 
     try {
-      const res = await fetch(`/api/projects/${slug}/vote`, {
-        method: next ? 'POST' : 'DELETE',
-      });
+      const res = await fetch(`/api/projects/${slug}/vote`, { method: next ? 'POST' : 'DELETE' });
       if (!res.ok) throw new Error('falha ao votar');
       const data = await res.json();
-
       setCount(parse(data.project.votes));
-      try {
-        if (next) localStorage.setItem(storageKey(slug), '1');
-        else localStorage.removeItem(storageKey(slug));
-      } catch {
-        // ignora indisponibilidade de localStorage
-      }
+      setIsVoted(data.project.voted);
       router.refresh();
     } catch {
       // Reverte a atualização otimista em caso de erro.
-      setVoted(!next);
+      setIsVoted(!next);
       setCount((c) => Math.max(0, c + (next ? -1 : 1)));
     } finally {
       setPending(false);
@@ -86,14 +76,13 @@ export default function VoteButton({
   }
 
   const display = format(count);
-  const activeRing = voted ? { boxShadow: '0 0 0 2px #b23a2a inset' } : null;
 
   if (variant === 'pill') {
     return (
       <button
         className="press"
         onClick={toggle}
-        aria-pressed={voted}
+        aria-pressed={isVoted}
         disabled={pending}
         style={{
           display: 'inline-flex',
@@ -104,7 +93,7 @@ export default function VoteButton({
           ...lightFace,
           boxShadow: '0 2px 0 #b1925e,inset 0 1px 0 rgba(255,255,255,.7)',
           font: '800 11px var(--font-mono)',
-          ...activeRing,
+          ...(isVoted ? { boxShadow: '0 2px 0 #b1925e,inset 0 1px 0 rgba(255,255,255,.7),0 0 0 2px #b23a2a inset' } : null),
         }}
       >
         ▲ {display}
@@ -121,7 +110,7 @@ export default function VoteButton({
     <button
       className="press"
       onClick={toggle}
-      aria-pressed={voted}
+      aria-pressed={isVoted}
       disabled={pending}
       style={{
         display: 'flex',
@@ -132,23 +121,17 @@ export default function VoteButton({
         padding: dims.padding,
         borderRadius: dims.radius,
         ...lightFace,
-        boxShadow:
-          '0 4px 0 #b1925e,0 6px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.7)',
+        boxShadow: isVoted
+          ? '0 4px 0 #b1925e,0 6px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.7),0 0 0 2px #b23a2a inset'
+          : '0 4px 0 #b1925e,0 6px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.7)',
         flex: 'none',
-        ...(voted ? { boxShadow: '0 4px 0 #b1925e,0 6px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.7),0 0 0 2px #b23a2a inset' } : null),
       }}
     >
-      <span style={{ fontSize: dims.arrow, lineHeight: 1, color: voted ? '#b23a2a' : undefined }}>▲</span>
+      <span style={{ fontSize: dims.arrow, lineHeight: 1, color: isVoted ? '#b23a2a' : undefined }}>▲</span>
       <span style={{ font: `800 ${dims.num}px var(--font-mono)` }}>{display}</span>
       {variant === 'detail' ? (
-        <span
-          style={{
-            font: '500 8px var(--font-mono)',
-            color: 'rgba(40,30,10,.55)',
-            marginTop: 1,
-          }}
-        >
-          {voted ? 'votado' : 'votar'}
+        <span style={{ font: '500 8px var(--font-mono)', color: 'rgba(40,30,10,.55)', marginTop: 1 }}>
+          {isVoted ? 'votado' : 'votar'}
         </span>
       ) : null}
     </button>

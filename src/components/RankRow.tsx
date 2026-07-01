@@ -5,7 +5,7 @@ import VoteButton from './VoteButton';
 /**
  * Linha do placar (posições fora do pódio). Voto físico + rank gigante.
  */
-export default function RankRow({ project }: { project: Project }) {
+export default function RankRow({ project, authed }: { project: Project; authed: boolean }) {
   return (
     <div
       style={{
@@ -34,7 +34,13 @@ export default function RankRow({ project }: { project: Project }) {
         {project.rank}
       </div>
 
-      <VoteButton votes={project.votes} slug={project.slug} variant="column" />
+      <VoteButton
+        votes={project.votes}
+        slug={project.slug}
+        voted={project.voted}
+        authed={authed}
+        variant="column"
+      />
 
       <Link
         href={`/project/${project.slug}`}

@@ -30,8 +30,6 @@ type Fields = Record<string, string>;
 
 export type ProjectFormValues = {
   name: string;
-  author: string;
-  handle: string;
   cat: string;
   blurb: string;
   description: string;
@@ -41,8 +39,6 @@ export type ProjectFormValues = {
 
 const empty: ProjectFormValues = {
   name: '',
-  author: '',
-  handle: '',
   cat: categories[0],
   blurb: '',
   description: '',
@@ -82,8 +78,6 @@ export default function ProjectForm({
 
     const payload = {
       name: form.name,
-      author: form.author,
-      handle: form.handle,
       cat: form.cat,
       blurb: form.blurb,
       description: form.description,
@@ -155,15 +149,6 @@ export default function ProjectForm({
         <Field label="NOME DO PROJETO *" error={errors.name}>
           <input style={fieldStyle} value={form.name} onChange={set('name')} placeholder="Ex.: Lumen" />
         </Field>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <Field label="AUTOR *" error={errors.author}>
-            <input style={fieldStyle} value={form.author} onChange={set('author')} placeholder="Ex.: Mara Klein" />
-          </Field>
-          <Field label="HANDLE *" error={errors.handle}>
-            <input style={fieldStyle} value={form.handle} onChange={set('handle')} placeholder="@marakt" />
-          </Field>
-        </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           <Field label="CATEGORIA">

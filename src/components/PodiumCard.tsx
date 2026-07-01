@@ -27,11 +27,13 @@ export default function PodiumCard({
   place,
   palette,
   note,
+  authed,
 }: {
   project: Project;
   place: 1 | 2 | 3;
   palette: 'warm' | 'cool' | 'sage';
   note?: string;
+  authed: boolean;
 }) {
   const featured = place === 1;
   const medal = medals[place];
@@ -131,7 +133,13 @@ export default function PodiumCard({
         <span style={{ font: `800 ${featured ? 12 : 11}px var(--font-mono)`, color: '#221c12' }}>
           ★ {project.stars}
         </span>
-        <VoteButton votes={project.votes} slug={project.slug} variant={featured ? 'lg' : 'column'} />
+        <VoteButton
+          votes={project.votes}
+          slug={project.slug}
+          voted={project.voted}
+          authed={authed}
+          variant={featured ? 'lg' : 'column'}
+        />
       </div>
     </Link>
   );

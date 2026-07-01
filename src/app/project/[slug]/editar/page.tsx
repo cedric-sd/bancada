@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Board from '@/components/Board';
 import ProjectForm from '@/components/ProjectForm';
 import { getProjectBySlug } from '@/lib/projects';
+import { getCurrentUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +15,11 @@ export default async function EditarProjetoPage({
   const { slug } = await params;
   const project = getProjectBySlug(slug);
   if (!project) notFound();
+
+  const user = await getCurrentUser();
+  if (!user) redirect(`/entrar?next=${encodeURIComponent(`/project/${slug}/editar`)}`);
+  // Só o dono edita.
+  if (project.ownerId !== user.id) redirect(`/project/${slug}`);
 
   return (
     <Board maxWidth={740}>
@@ -28,8 +34,6 @@ export default async function EditarProjetoPage({
         slug={slug}
         initial={{
           name: project.name,
-          author: project.author,
-          handle: project.handle,
           cat: project.cat,
           blurb: project.blurb,
           description: project.description,
