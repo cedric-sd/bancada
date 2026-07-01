@@ -34,7 +34,7 @@ export default function RankRow({ project }: { project: Project }) {
         {project.rank}
       </div>
 
-      <VoteButton votes={project.votes} variant="column" />
+      <VoteButton votes={project.votes} slug={project.slug} variant="column" />
 
       <Link
         href={`/project/${project.slug}`}

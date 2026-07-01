@@ -98,7 +98,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             </Link>
           </div>
           <div style={{ display: 'flex', gap: 10, flex: 'none' }}>
-            <VoteButton votes={project.votes} variant="detail" />
+            <VoteButton votes={project.votes} slug={project.slug} variant="detail" />
             <DarkButton size="lg">
               ABRIR <span style={{ fontSize: 14 }}>↗</span>
             </DarkButton>

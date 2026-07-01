@@ -131,7 +131,7 @@ export default function PodiumCard({
         <span style={{ font: `800 ${featured ? 12 : 11}px var(--font-mono)`, color: '#221c12' }}>
           ★ {project.stars}
         </span>
-        <VoteButton votes={project.votes} variant={featured ? 'lg' : 'column'} />
+        <VoteButton votes={project.votes} slug={project.slug} variant={featured ? 'lg' : 'column'} />
       </div>
     </Link>
   );
