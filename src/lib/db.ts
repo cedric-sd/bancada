@@ -42,6 +42,7 @@ function init(): Database.Database {
       handle        TEXT    UNIQUE NOT NULL,
       name          TEXT    NOT NULL,
       password_hash TEXT    NOT NULL,
+      bio           TEXT    NOT NULL DEFAULT '',
       created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -68,8 +69,9 @@ function init(): Database.Database {
     );
   `);
 
-  // Migração para bancos criados antes da coluna owner_id.
+  // Migrações para bancos criados antes destas colunas.
   ensureColumn(db, 'projects', 'owner_id', 'INTEGER');
+  ensureColumn(db, 'users', 'bio', "TEXT NOT NULL DEFAULT ''");
 
   seedIfEmpty(db);
   return db;

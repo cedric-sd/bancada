@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import sharp from 'sharp';
 import { getProjectImage, getProjectOwnerId, setProjectImage } from '@/lib/projects';
 import { getCurrentUser } from '@/lib/auth';
 
@@ -56,7 +57,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     return NextResponse.json({ error: 'Imagem muito grande (máx. 3 MB).' }, { status: 422 });
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  setProjectImage(slug, file.type, buffer);
-  return NextResponse.json({ ok: true, hasImage: true });
+  const input = Buffer.from(await file.arrayBuffer());
+
+  // Otimiza: corrige orientação, limita a 1200×800 (sem ampliar) e reencoda em
+  // WebP. Preserva animação de GIFs. Padroniza formato e reduz bastante o peso.
+  let optimized: Buffer;
+  try {
+    optimized = await sharp(input, { animated: true })
+      .rotate()
+      .resize({ width: 1200, height: 800, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 80 })
+      .toBuffer();
+  } catch {
+    return NextResponse.json({ error: 'Não foi possível processar a imagem.' }, { status: 422 });
+  }
+
+  setProjectImage(slug, 'image/webp', optimized);
+  return NextResponse.json({ ok: true, hasImage: true, bytes: optimized.length });
 }
