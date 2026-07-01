@@ -1,5 +1,5 @@
 import { getDb } from './db';
-import { devs, type Dev, type Project } from './data';
+import { type Achievement, type Dev, type Project } from './data';
 
 type Row = {
   id: number;
@@ -225,81 +225,100 @@ export function voteProject(slug: string, userId: number, delta: 1 | -1): Projec
   return getProjectBySlug(slug, userId);
 }
 
-// Soma de votos exibidos ("1.428" + "655" → "2.083"), separador pt-BR.
-const sumVotes = (list: Project[]) =>
-  list
-    .reduce((acc, p) => acc + (parseInt(p.votes.replace(/\D/g, ''), 10) || 0), 0)
-    .toLocaleString('pt-BR');
+const votesOf = (p: Project) => parseInt(p.votes.replace(/\D/g, ''), 10) || 0;
 
-/**
- * Resolve o perfil de um dev pelo handle. Perfis ricos vêm de `devs`; para os
- * demais autores, monta um perfil a partir dos projetos publicados no banco.
- */
-export function resolveDev(rawHandle: string): Dev | undefined {
-  const key = rawHandle.replace(/^@/, '');
-  if (devs[key]) {
-    const rich = devs[key];
-    // Mantém a lista de projetos publicados sincronizada com o banco.
-    const authored = listProjects().filter((p) => p.handle.replace(/^@/, '') === key);
-    return authored.length > 0
-      ? { ...rich, projectSlugs: authored.map((p) => p.slug) }
-      : rich;
-  }
+// XP acumulado necessário para ESTAR no nível L: 50·(L-1)·L (0, 100, 300, 600, 1000…).
+const xpThreshold = (level: number) => 50 * (level - 1) * level;
 
-  const authored = listProjects().filter((p) => p.handle.replace(/^@/, '') === key);
-  if (authored.length === 0) {
-    // Usuário cadastrado que ainda não publicou nada: perfil mínimo.
-    const u = getDb()
-      .prepare('SELECT name, handle FROM users WHERE handle = ?')
-      .get(key.toLowerCase()) as { name: string; handle: string } | undefined;
-    if (!u) return undefined;
+function levelForXp(xp: number): number {
+  let level = 1;
+  while (xpThreshold(level + 1) <= xp) level += 1;
+  return level;
+}
 
-    const inits = u.name
-      .split(/\s+/)
-      .filter(Boolean)
-      .map((w) => w[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase();
-    return {
-      handle: `@${u.handle}`,
-      name: u.name,
-      initials: inits,
-      bio: 'Ainda não publicou projetos na bancada.',
-      level: 1,
-      xp: 0,
-      xpNext: 200,
-      badge: 'BUILDER',
-      stats: { projects: 0, votes: '0', bestRank: '—' },
-      achievements: [],
-      projectSlugs: [],
-    };
-  }
-
-  const main = authored[0];
-  const level = Math.max(...authored.map((p) => p.lvl));
-  const initials = main.author
-    .split(' ')
+const initialsOf = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
     .map((w) => w[0])
     .join('')
     .slice(0, 2)
     .toUpperCase();
-  const bestRank = Math.min(...authored.map((p) => p.rank));
+
+// Selo ao lado do nome, por nível alcançado.
+function rankBadge(level: number): string {
+  if (level >= 10) return 'OURO DEV';
+  if (level >= 6) return 'PRATA DEV';
+  if (level >= 3) return 'BRONZE DEV';
+  return 'BUILDER';
+}
+
+// Conquistas derivadas de métricas reais (votos recebidos, projetos, melhor rank).
+function buildAchievements(votes: number, projectCount: number, bestRank: number): Achievement[] {
+  const out: Achievement[] = [];
+  const rot = [-4, 3, -2, 2.5, -3, 2];
+  const add = (label: string, color: string) =>
+    out.push({ label, color, rotate: rot[out.length % rot.length] });
+
+  if (bestRank === 1) add('TOP DA SEMANA', '#b23a2a');
+  else if (bestRank <= 3) add('TOP 3', '#2f6d86');
+
+  if (votes >= 1000) add('+1000 VOTOS', '#557a38');
+  else if (votes >= 100) add('+100 VOTOS', '#557a38');
+
+  if (projectCount >= 3) add('MARATONISTA', '#2f6d86');
+  if (projectCount >= 1) add('PRIMEIRO PROJETO', '#9a6a1f');
+
+  return out;
+}
+
+/**
+ * Perfil REAL de um dev, calculado a partir dos projetos publicados e dos votos
+ * recebidos. Reconhece também usuários cadastrados que ainda não publicaram.
+ */
+export function resolveDev(rawHandle: string): Dev | undefined {
+  const key = rawHandle.replace(/^@/, '').toLowerCase();
+  const authored = listProjects().filter((p) => p.handle.replace(/^@/, '').toLowerCase() === key);
+
+  const account = getDb()
+    .prepare('SELECT name, handle FROM users WHERE handle = ?')
+    .get(key) as { name: string; handle: string } | undefined;
+
+  if (authored.length === 0 && !account) return undefined;
+
+  const name = account?.name ?? authored[0].author;
+  const handle = account ? `@${account.handle}` : authored[0].handle;
+
+  const votes = authored.reduce((acc, p) => acc + votesOf(p), 0);
+  const projectCount = authored.length;
+  const bestRank = projectCount > 0 ? Math.min(...authored.map((p) => p.rank)) : 0;
+
+  // XP recompensa votos recebidos e projetos publicados (100 XP por projeto).
+  const xp = votes + projectCount * 100;
+  const level = levelForXp(xp);
+
+  // Categorias distintas viram a bio.
+  const cats = [...new Set(authored.map((p) => p.cat).filter(Boolean))];
+  const bio =
+    projectCount === 0
+      ? 'Ainda não publicou projetos na bancada.'
+      : `Constrói ${cats.join(', ')} na bancada. ${projectCount} projeto${projectCount > 1 ? 's' : ''} publicado${projectCount > 1 ? 's' : ''}.`;
 
   return {
-    handle: main.handle,
-    name: main.author,
-    initials,
-    bio: 'Builder na bancada. Publica ferramentas para a comunidade.',
+    handle,
+    name,
+    initials: initialsOf(name),
+    bio,
     level,
-    xp: level * 200,
-    xpNext: (level + 1) * 200,
-    badge: bestRank <= 3 ? 'DESTAQUE' : 'BUILDER',
-    stats: { projects: authored.length, votes: sumVotes(authored), bestRank: `#${bestRank}` },
-    achievements: [
-      { label: 'EARLY BUILDER', color: '#9a6a1f', rotate: -3 },
-      ...(bestRank <= 3 ? [{ label: 'TOP 3', color: '#b23a2a', rotate: 3 }] : []),
-    ],
+    xp,
+    xpNext: xpThreshold(level + 1),
+    badge: rankBadge(level),
+    stats: {
+      projects: projectCount,
+      votes: votes.toLocaleString('pt-BR'),
+      bestRank: projectCount > 0 ? `#${bestRank}` : '—',
+    },
+    achievements: buildAchievements(votes, projectCount, bestRank),
     projectSlugs: authored.map((p) => p.slug),
   };
 }
