@@ -20,6 +20,7 @@ export type Project = {
   // autenticação/propriedade
   ownerId: number | null;
   voted: boolean;
+  hasImage: boolean;
 };
 
 export type Review = {
@@ -54,7 +55,7 @@ const slugify = (s: string) => s.toLowerCase();
 
 // Dados iniciais que semeiam o banco na primeira execução. A partir daí a
 // fonte de verdade é o SQLite (ver src/lib/db.ts e src/lib/projects.ts).
-export type SeedProject = Omit<Project, 'ownerId' | 'voted'>;
+export type SeedProject = Omit<Project, 'ownerId' | 'voted' | 'hasImage'>;
 
 export const seedProjects: SeedProject[] = [
   {

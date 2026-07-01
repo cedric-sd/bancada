@@ -106,7 +106,13 @@ export default function PodiumCard({
         )}
       </div>
 
-      <Thumb height={featured ? 96 : 80} palette={palette} radius={4} />
+      <Thumb
+        height={featured ? 96 : 80}
+        palette={palette}
+        radius={4}
+        src={project.hasImage ? `/api/projects/${project.slug}/image` : undefined}
+        alt={`Screenshot de ${project.name}`}
+      />
 
       <div
         style={{

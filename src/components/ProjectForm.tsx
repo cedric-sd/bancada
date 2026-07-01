@@ -53,14 +53,17 @@ export default function ProjectForm({
   mode,
   slug,
   initial,
+  hasImage = false,
 }: {
   mode: 'create' | 'edit';
   slug?: string;
   initial?: Partial<ProjectFormValues>;
+  hasImage?: boolean;
 }) {
   const router = useRouter();
   const isEdit = mode === 'edit';
   const [form, setForm] = useState<ProjectFormValues>({ ...empty, ...initial });
+  const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Fields>({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -102,6 +105,25 @@ export default function ProjectForm({
         setServerError(data.error ?? 'Não foi possível salvar.');
         setSubmitting(false);
         return;
+      }
+
+      // Envia o screenshot (se escolhido) depois de criar/atualizar o projeto.
+      if (file) {
+        const fd = new FormData();
+        fd.append('image', file);
+        const up = await fetch(`/api/projects/${data.project.slug}/image`, {
+          method: 'POST',
+          body: fd,
+        });
+        if (!up.ok) {
+          const upErr = await up.json().catch(() => ({}));
+          setServerError(
+            `Projeto salvo, mas a imagem falhou: ${upErr.error ?? 'tente reenviar na edição.'}`,
+          );
+          setSubmitting(false);
+          router.refresh();
+          return;
+        }
       }
 
       router.push(`/project/${data.project.slug}`);
@@ -180,6 +202,22 @@ export default function ProjectForm({
 
         <Field label="TAGS (SEPARADAS POR VÍRGULA)">
           <input style={fieldStyle} value={form.tags} onChange={set('tags')} placeholder="#cli, #terminal, #rust" />
+        </Field>
+
+        <Field label="SCREENSHOT (PNG, JPG, WEBP OU GIF · ATÉ 3 MB)">
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+            style={{ ...fieldStyle, padding: '8px 12px', font: '500 12px var(--font-mono)' }}
+          />
+          <div style={{ font: '500 10px var(--font-mono)', color: 'rgba(40,30,10,.5)', marginTop: 6 }}>
+            {file
+              ? `selecionado: ${file.name}`
+              : isEdit && hasImage
+                ? 'já tem uma imagem — escolha outra para substituir.'
+                : 'opcional: uma imagem de preview do projeto.'}
+          </div>
         </Field>
 
         {serverError ? (

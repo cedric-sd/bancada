@@ -204,11 +204,21 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
                   width: 42,
                   height: 42,
                   borderRadius: 6,
+                  overflow: 'hidden',
                   background: 'repeating-linear-gradient(45deg,#d8c49a 0 7px,rgba(0,0,0,.05) 7px 14px)',
                   boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.1)',
                   flex: 'none',
                 }}
-              />
+              >
+                {p.hasImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={`/api/projects/${p.slug}/image`}
+                    alt=""
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : null}
+              </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ font: '800 15px var(--font-archivo)', color: '#221c12' }}>{p.name}</div>
                 <div style={{ font: '400 12px/1.3 var(--font-news)', color: '#5a4f3c' }}>{p.blurb}</div>

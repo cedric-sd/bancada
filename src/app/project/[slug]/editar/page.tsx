@@ -32,6 +32,7 @@ export default async function EditarProjetoPage({
       <ProjectForm
         mode="edit"
         slug={slug}
+        hasImage={project.hasImage}
         initial={{
           name: project.name,
           cat: project.cat,

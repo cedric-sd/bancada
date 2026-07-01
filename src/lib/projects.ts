@@ -20,6 +20,7 @@ type Row = {
   owner_id: number | null;
   created_at: string;
   voted?: number;
+  has_image?: number;
 };
 
 export type CreateProjectInput = {
@@ -66,6 +67,7 @@ function toProject(row: Row, rank: number): Project {
     xpForAuthor: row.xp_for_author,
     ownerId: row.owner_id,
     voted: !!row.voted,
+    hasImage: !!row.has_image,
   };
 }
 
@@ -101,9 +103,12 @@ function uniqueSlug(base: string): string {
 export function listProjects(userId?: number | null): Project[] {
   const rows = getDb()
     .prepare(
-      `SELECT p.*, (uv.user_id IS NOT NULL) AS voted
+      `SELECT p.*,
+              (uv.user_id IS NOT NULL) AS voted,
+              (pi.project_id IS NOT NULL) AS has_image
        FROM projects p
        LEFT JOIN user_votes uv ON uv.project_id = p.id AND uv.user_id = @userId
+       LEFT JOIN project_images pi ON pi.project_id = p.id
        ORDER BY p.votes DESC, p.created_at ASC, p.id ASC`,
     )
     .all({ userId: userId ?? -1 }) as Row[];
@@ -183,6 +188,34 @@ export function updateProject(slug: string, patch: UpdateProjectInput): Project 
 export function deleteProject(slug: string): boolean {
   const info = getDb().prepare('DELETE FROM projects WHERE slug = ?').run(slug);
   return info.changes > 0;
+}
+
+/** Grava/atualiza o screenshot do projeto. Retorna false se o projeto não existe. */
+export function setProjectImage(slug: string, mime: string, data: Buffer): boolean {
+  const db = getDb();
+  const proj = db.prepare('SELECT id FROM projects WHERE slug = ?').get(slug) as
+    | { id: number }
+    | undefined;
+  if (!proj) return false;
+
+  db.prepare(
+    `INSERT INTO project_images (project_id, mime, data, updated_at)
+     VALUES (@id, @mime, @data, datetime('now'))
+     ON CONFLICT(project_id) DO UPDATE SET mime = @mime, data = @data, updated_at = datetime('now')`,
+  ).run({ id: proj.id, mime, data });
+  return true;
+}
+
+/** Lê o screenshot do projeto (mime + bytes), ou undefined se não houver. */
+export function getProjectImage(slug: string): { mime: string; data: Buffer } | undefined {
+  const row = getDb()
+    .prepare(
+      `SELECT pi.mime AS mime, pi.data AS data
+       FROM project_images pi JOIN projects p ON p.id = pi.project_id
+       WHERE p.slug = ?`,
+    )
+    .get(slug) as { mime: string; data: Buffer } | undefined;
+  return row;
 }
 
 /** owner_id de um projeto (ou undefined se o projeto não existe). */

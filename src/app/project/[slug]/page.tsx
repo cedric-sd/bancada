@@ -82,7 +82,15 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         }}
       >
         {/* hero */}
-        <Thumb height={230} palette="warm" radius={6} stripe={12} label="screenshot principal · arraste aqui">
+        <Thumb
+          height={230}
+          palette="warm"
+          radius={6}
+          stripe={12}
+          label="screenshot principal · arraste aqui"
+          src={project.hasImage ? `/api/projects/${project.slug}/image` : undefined}
+          alt={`Screenshot de ${project.name}`}
+        >
           <span
             style={{
               position: 'absolute',
