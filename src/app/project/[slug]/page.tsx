@@ -7,6 +7,7 @@ import Avatar from '@/components/Avatar';
 import DarkButton from '@/components/DarkButton';
 import VoteButton from '@/components/VoteButton';
 import ReviewCard from '@/components/ReviewCard';
+import DeleteProjectButton from '@/components/DeleteProjectButton';
 import { getReviews } from '@/lib/data';
 import { getProjectBySlug } from '@/lib/projects';
 
@@ -45,9 +46,26 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
   return (
     <Board maxWidth={740}>
-      <Link href="/" style={{ font: '500 10px var(--font-mono)', color: 'rgba(40,30,10,.6)', display: 'inline-block', marginBottom: 14 }}>
-        ‹ voltar ao placar
-      </Link>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          marginBottom: 14,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Link href="/" style={{ font: '500 10px var(--font-mono)', color: 'rgba(40,30,10,.6)' }}>
+          ‹ voltar ao placar
+        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <Link href={`/project/${slug}/editar`} style={{ font: '600 11px var(--font-mono)', color: 'rgba(40,30,10,.6)' }}>
+            editar
+          </Link>
+          <DeleteProjectButton slug={slug} name={project.name} />
+        </div>
+      </div>
 
       <div
         style={{
