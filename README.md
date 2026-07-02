@@ -23,6 +23,7 @@ Próximos passos de gamificação estão em [`ROADMAP.md`](ROADMAP.md).
 | `/publicar`, `/project/[slug]/editar` | **Formulários** | Publicar (requer login) e editar (só o dono). |
 | `/perfil/editar` | **Perfil** | Editar o próprio nome, bio e avatar. |
 | `/meus-projetos` | **Meus projetos** | Gerenciar (ver/editar/excluir) os projetos que você publicou. |
+| `/hall-da-fama` | **Hall da Fama** | Disputa da semana atual (top 3 + quanto falta) e os vencedores de semanas passadas. |
 
 A tela principal é a **1b** (placar de ranking); as telas internas seguem a
 direção visual da 1b, conforme o protótipo de referência.
@@ -38,6 +39,11 @@ direção visual da 1b, conforme o protótipo de referência.
 - **Reviews reais**: avaliações (1–5 estrelas + texto) da comunidade, uma por
   usuário por projeto; não é possível avaliar o próprio projeto.
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
+- **Ciclo semanal**: o placar da semana conta os votos da semana corrente
+  (segunda 00:00 UTC → segunda seguinte). Ao virar a semana, o 1º lugar é coroado
+  e arquivado no **Hall da Fama** — sem agendador: as semanas concluídas são
+  "encerradas" de forma preguiçosa na leitura. Uma faixa no topo do placar mostra
+  o líder da semana e quanto falta para encerrar.
 - **Ordenação do placar** em abas: `top` (mais votados), `novos` (recentes) e
   `alta` (mais votos nos últimos 7 dias) — via `?ordem=`.
 - **Busca** (`?q=` em nome/resumo/autor) e **filtro por categoria** (`?cat=`);

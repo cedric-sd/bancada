@@ -17,12 +17,14 @@ Já implementado:
 - **Conquistas** derivadas de métricas: `TOP DA SEMANA`, `TOP 3`, `+1000/+100 VOTOS`,
   `MARATONISTA`, `PRIMEIRO PROJETO`; selo por nível (BUILDER → BRONZE → PRATA → OURO).
 - **Perfil** do dev (nível, barra de XP, conquistas, projetos) e **"meus projetos"**.
+- **Ciclo semanal** (Fase 1 ✓): placar da semana conta votos da semana corrente,
+  vencedor coroado ao virar a semana e **Hall da Fama** com os campeões anteriores.
 
-### A maior lacuna
+### A maior lacuna — resolvida na Fase 1
 
-O app promete **"PLACAR DA SEMANA"**, mas o ranking é **cumulativo/all-time** — não
-há ciclo. Gamificação vive de um *loop que recomeça* e de *feedback*. É onde está o
-maior retorno.
+O app prometia **"PLACAR DA SEMANA"**, mas o ranking era **cumulativo/all-time**.
+A Fase 1 introduziu o ciclo semanal (a base do *loop que recomeça*): o próximo
+maior retorno agora está no **feedback** (Fase 2).
 
 ## Princípios de design
 
@@ -37,18 +39,19 @@ maior retorno.
 
 ## Fases
 
-### Fase 1 — Ciclo semanal (a base de tudo) · alto impacto
+### Fase 1 — Ciclo semanal (a base de tudo) · alto impacto · ✓ feito
 
 Torna o "PLACAR DA SEMANA" verdadeiro e cria motivo para voltar toda semana.
 
-- **Temporadas/semanas:** votos contam para a semana corrente; manter um placar
-  all-time à parte.
-- **Vencedor da semana:** ao virar a semana, coroar o 1º lugar e arquivar o resultado.
-- **Hall da Fama:** página com os vencedores anteriores (status permanente).
-- **Notas de implementação:** já há base (`user_votes.created_at`). Precisa de uma
-  noção de "semana" (ex.: `season_id` ou janela por data) e uma tabela de resultados
-  (`weekly_results`: semana, project_id, rank, votos). Decidir se o placar principal
-  passa a ser semanal com um toggle "semana / geral".
+- ✓ **Semanas:** a semana é uma janela por data (segunda 00:00 UTC → segunda
+  seguinte), derivada de `user_votes.created_at` — sem `season_id`. O placar da
+  semana é calculado dessa janela; o all-time segue nas abas.
+- ✓ **Vencedor da semana:** ao virar a semana, o 1º lugar é arquivado em
+  `weekly_winners` — de forma preguiçosa na leitura (`settlePastWeeks`), sem agendador.
+- ✓ **Hall da Fama:** `/hall-da-fama` com a disputa da semana atual e os campeões
+  anteriores; faixa no topo do placar com o líder da semana e o tempo restante.
+- **Fica para depois:** toggle "semana / geral" no placar principal (hoje o
+  destaque semanal vive na faixa + Hall da Fama, e o placar segue all-time).
 
 ### Fase 2 — Feedback e movimento · alto impacto, médio esforço
 

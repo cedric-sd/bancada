@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { seedProjects } from './data';
+import { addWeeks, sqliteUtc, startOfWeek } from './week';
 
 // Reaproveita a conexão entre hot-reloads no dev (evita abrir vários handles).
 const globalForDb = globalThis as unknown as { __bancadaDb?: Database.Database };
@@ -90,6 +91,17 @@ function init(): Database.Database {
       updated_at TEXT    NOT NULL DEFAULT (datetime('now')),
       UNIQUE (project_id, user_id)
     );
+
+    -- Vencedores de semanas encerradas (snapshot para o Hall da Fama).
+    CREATE TABLE IF NOT EXISTS weekly_winners (
+      week_start TEXT    PRIMARY KEY,
+      project_id INTEGER,
+      slug       TEXT,
+      name       TEXT,
+      author     TEXT,
+      votes      INTEGER NOT NULL DEFAULT 0,
+      settled_at TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   // Migrações para bancos criados antes destas colunas.
@@ -150,6 +162,56 @@ function seedIfEmpty(db: Database.Database) {
   });
 
   seed(seedProjects);
+  seedWeeklyVotes(db);
+}
+
+// Semeia "eleitores" e votos distribuídos pelas últimas semanas — assim o
+// placar da semana e o Hall da Fama já nascem com vida (e campeões variados).
+function seedWeeklyVotes(db: Database.Database) {
+  const voterNames = [
+    'Théo Salles', 'Bia Ramos', 'Davi Lin', 'Ana Beltrão', 'Igor Pádua', 'Rê Couto',
+    'Léo Maia', 'Nina Rocha', 'Caio Vidal', 'Sofia Nunes', 'Rui Castro', 'Lia Prado',
+    'Gus Amaral', 'Vera Pinto', 'Ivo Barros', 'Mel Dantas', 'Zé Farias', 'Duda Reis',
+    'Tom Aires', 'Paz Moura',
+  ];
+  const insUser = db.prepare("INSERT INTO users (handle, name, password_hash) VALUES (?, ?, '')");
+  const voterIds = voterNames.map((n, i) => Number(insUser.run(`eleitor${i + 1}`, n).lastInsertRowid));
+
+  const projectId = (slug: string) =>
+    (db.prepare('SELECT id FROM projects WHERE slug = ?').get(slug) as { id: number }).id;
+
+  const curWeek = startOfWeek(new Date());
+  // [offset de semana, [ [slug, quantidade], ... ]]
+  const plan: [number, [string, number][]][] = [
+    [-3, [['quokka', 5], ['lumen', 2], ['refactr', 1]]],
+    [-2, [['refactr', 5], ['markdownr', 3], ['lumen', 2]]],
+    [-1, [['lumen', 6], ['stipple', 3], ['cronos', 2]]],
+    [0, [['lumen', 5], ['markdownr', 3], ['pixelforge', 2], ['quokka', 2]]],
+  ];
+
+  const nextVoter: Record<string, number> = {}; // por projeto, para não repetir eleitor
+  const insVote = db.prepare(
+    'INSERT OR IGNORE INTO user_votes (user_id, project_id, created_at) VALUES (?, ?, ?)',
+  );
+
+  const run = db.transaction(() => {
+    for (const [offset, list] of plan) {
+      const wStart = addWeeks(curWeek, offset);
+      for (const [slug, count] of list) {
+        const pid = projectId(slug);
+        for (let k = 0; k < count; k++) {
+          const idx = nextVoter[slug] ?? 0;
+          nextVoter[slug] = idx + 1;
+          const userId = voterIds[idx];
+          const dt = new Date(wStart);
+          dt.setUTCDate(dt.getUTCDate() + Math.min(6, k)); // dentro da semana
+          dt.setUTCHours(10, 0, 0, 0);
+          insVote.run(userId, pid, sqliteUtc(dt));
+        }
+      }
+    }
+  });
+  run();
 }
 
 export function getDb(): Database.Database {
