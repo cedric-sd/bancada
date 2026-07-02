@@ -1,5 +1,6 @@
 import { getDb } from './db';
 import { notifyProjectEvent } from './notifications';
+import { awardXp } from './xp';
 
 export type ReviewView = {
   id: number;
@@ -112,8 +113,11 @@ export function upsertReview(
        DO UPDATE SET stars = @stars, text = @text, updated_at = datetime('now')`,
   ).run({ projectId, userId, stars, text: text.trim() });
 
-  // Avisa o dono na primeira avaliação (edições não geram novo aviso).
-  if (!existed) notifyProjectEvent(projectId, userId, 'review', { stars });
+  // Avisa o dono e concede XP na primeira avaliação (edições não repetem).
+  if (!existed) {
+    notifyProjectEvent(projectId, userId, 'review', { stars });
+    awardXp(userId, 'review', projectId);
+  }
   return 'ok';
 }
 

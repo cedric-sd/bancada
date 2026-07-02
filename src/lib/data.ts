@@ -45,6 +45,7 @@ export type Dev = {
   xp: number;
   xpNext: number;
   badge: string;
+  participation: number; // XP acumulado por votar/avaliar/publicar
   stats: { projects: number; votes: string; bestRank: string };
   achievements: Achievement[];
   projectSlugs: string[];

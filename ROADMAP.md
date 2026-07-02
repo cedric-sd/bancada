@@ -74,8 +74,12 @@ Fecha o loop: o usuário precisa *sentir* o efeito das ações.
 
 Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
 
-- **XP por ação:** votar, avaliar, publicar, login diário (com limites anti-farm).
-- **Streaks:** dias/semanas seguidas ativo — uma das mecânicas de retenção mais fortes.
+- ✓ **XP por ação:** votar (+2), avaliar (+5) e publicar (+25) rendem XP, somado
+  ao XP de votos recebidos/projetos. Anti-farm por índice único
+  (`user_id, kind, ref`): um ganho por alvo; reverter/refazer não repete. O perfil
+  mostra o XP de participação. Falta o **login diário**, que vem com os streaks.
+- **Streaks:** dias/semanas seguidas ativo — uma das mecânicas de retenção mais
+  fortes. Inclui o **XP de login diário** (com limite anti-farm por dia).
 - **Missões da semana:** ex. "avalie 3 projetos", "publique 1" → recompensa em XP.
   Ensinam o loop e direcionam comportamento.
 

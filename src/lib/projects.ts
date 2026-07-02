@@ -1,6 +1,7 @@
 import { getDb } from './db';
 import { type Achievement, type Dev, type Project } from './data';
 import { notifyProjectEvent } from './notifications';
+import { awardXp, participationXp } from './xp';
 
 type Row = {
   id: number;
@@ -175,7 +176,7 @@ export function createProject(input: CreateProjectInput): Project {
   const name = input.name.trim();
   const slug = uniqueSlug(slugify(name));
 
-  db.prepare(`
+  const info = db.prepare(`
     INSERT INTO projects
       (slug, name, blurb, author, handle, stars, votes, cat, badge, lvl, description, tags, forks, xp_for_author, owner_id, url)
     VALUES
@@ -193,6 +194,9 @@ export function createProject(input: CreateProjectInput): Project {
     ownerId: input.ownerId ?? null,
     url: input.url?.trim() || null,
   });
+
+  // XP de participação por publicar (uma vez por projeto).
+  if (input.ownerId) awardXp(input.ownerId, 'publish', Number(info.lastInsertRowid));
 
   return getProjectBySlug(slug)!;
 }
@@ -310,8 +314,11 @@ export function voteProject(slug: string, userId: number, delta: 1 | -1): Projec
   });
   tx();
 
-  // Avisa o dono do projeto apenas quando um voto novo é registrado.
-  if (voted) notifyProjectEvent(proj.id, userId, 'vote');
+  // Avisa o dono e concede XP de participação apenas em voto novo.
+  if (voted) {
+    notifyProjectEvent(proj.id, userId, 'vote');
+    awardXp(userId, 'vote', proj.id);
+  }
 
   return getProjectBySlug(slug, userId);
 }
@@ -373,12 +380,12 @@ export function resolveDev(rawHandle: string): Dev | undefined {
 
   const account = getDb()
     .prepare(
-      `SELECT u.name AS name, u.handle AS handle, u.bio AS bio,
+      `SELECT u.id AS id, u.name AS name, u.handle AS handle, u.bio AS bio,
               (av.user_id IS NOT NULL) AS has_avatar
        FROM users u LEFT JOIN user_avatars av ON av.user_id = u.id
        WHERE u.handle = ?`,
     )
-    .get(key) as { name: string; handle: string; bio: string; has_avatar: number } | undefined;
+    .get(key) as { id: number; name: string; handle: string; bio: string; has_avatar: number } | undefined;
 
   if (authored.length === 0 && !account) return undefined;
 
@@ -389,8 +396,10 @@ export function resolveDev(rawHandle: string): Dev | undefined {
   const projectCount = authored.length;
   const bestRank = projectCount > 0 ? Math.min(...authored.map((p) => p.rank)) : 0;
 
-  // XP recompensa votos recebidos e projetos publicados (100 XP por projeto).
-  const xp = votes + projectCount * 100;
+  // XP recompensa votos recebidos, projetos publicados (100 XP por projeto) e a
+  // participação na plataforma (votar, avaliar, publicar — ver src/lib/xp.ts).
+  const participation = account ? participationXp(account.id) : 0;
+  const xp = votes + projectCount * 100 + participation;
   const level = levelForXp(xp);
 
   // Bio personalizada da conta tem prioridade; senão, é gerada das categorias.
@@ -411,6 +420,7 @@ export function resolveDev(rawHandle: string): Dev | undefined {
     xp,
     xpNext: xpThreshold(level + 1),
     badge: rankBadge(level),
+    participation,
     stats: {
       projects: projectCount,
       votes: votes.toLocaleString('pt-BR'),
