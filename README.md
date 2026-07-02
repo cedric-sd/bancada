@@ -53,7 +53,9 @@ direção visual da 1b, conforme o protótipo de referência.
 - **Conquistas com progresso**: além das conquistadas (carimbos), o perfil mostra
   as **próximas** com barra de progresso ("faltam N votos para +1000"). Inclui as
   de participação — **Curador** (votar em 10), **Crítico** (avaliar 5) e
-  **Comentado** (receber 5 avaliações).
+  **Comentado** (receber 5 avaliações). Ao abrir o próprio perfil com conquistas
+  **recém-desbloqueadas**, há uma **celebração** (toast + confete), uma vez por
+  conquista.
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
 - **Notificações**: quando alguém vota ou avalia um projeto seu, o dono recebe
   um aviso (feed em `/notificacoes` + selo de não-lidas no sino do header). Só a

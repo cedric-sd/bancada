@@ -130,6 +130,14 @@ function init(): Database.Database {
     );
     CREATE UNIQUE INDEX IF NOT EXISTS idx_xp_events_dedupe
       ON xp_events(user_id, kind, ref) WHERE ref IS NOT NULL;
+
+    -- Conquistas já desbloqueadas (para celebrar cada uma uma única vez).
+    CREATE TABLE IF NOT EXISTS achievement_unlocks (
+      user_id        INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      achievement_id TEXT    NOT NULL,
+      created_at     TEXT    NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (user_id, achievement_id)
+    );
   `);
 
   // Migrações para bancos criados antes destas colunas.
