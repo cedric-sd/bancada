@@ -5,6 +5,7 @@ import { awardXp, participationXp } from './xp';
 import { currentStreak } from './streak';
 import { buildAchievements, earnedAchievements, upcomingAchievements, type Metrics } from './achievements';
 import { tierForLevel } from './tiers';
+import { followCounts } from './follows';
 
 type Row = {
   id: number;
@@ -403,6 +404,7 @@ export function resolveDev(rawHandle: string): Dev | undefined {
   // participação na plataforma (votar, avaliar, publicar — ver src/lib/xp.ts).
   const participation = account ? participationXp(account.id) : 0;
   const streak = account ? currentStreak(account.id) : 0;
+  const follows = account ? followCounts(account.id) : { followers: 0, following: 0 };
   const xp = votes + projectCount * 100 + participation;
   const level = levelForXp(xp);
 
@@ -436,6 +438,9 @@ export function resolveDev(rawHandle: string): Dev | undefined {
     badge: tierForLevel(level).badge,
     participation,
     streak,
+    userId: account?.id ?? null,
+    followers: follows.followers,
+    following: follows.following,
     stats: {
       projects: projectCount,
       votes: votes.toLocaleString('pt-BR'),

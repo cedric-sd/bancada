@@ -3,10 +3,12 @@ import { notFound } from 'next/navigation';
 import Board from '@/components/Board';
 import Stamp from '@/components/Stamp';
 import UnlockCelebration from '@/components/UnlockCelebration';
+import FollowButton from '@/components/FollowButton';
 import { resolveDev, getProjectBySlug } from '@/lib/projects';
 import { getCurrentUser } from '@/lib/auth';
 import { settleUnlocks } from '@/lib/unlocks';
 import { tierForLevel } from '@/lib/tiers';
+import { isFollowing } from '@/lib/follows';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,6 +46,9 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
   const justUnlocked = dev.achievements
     .filter((a) => justUnlockedIds.includes(a.id))
     .map((a) => ({ label: a.label, color: a.color }));
+
+  const canFollow = !isSelf && dev.userId !== null;
+  const viewerFollows = canFollow && user ? isFollowing(user.id, dev.userId!) : false;
 
   const tier = tierForLevel(dev.level);
   const pct = Math.min(100, Math.round((dev.xp / dev.xpNext) * 100));
@@ -171,6 +176,21 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
               ) : null}
             </div>
             <div style={{ font: '400 14px/1.4 var(--font-news)', color: '#5a4f3c', marginTop: 5 }}>{dev.bio}</div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 10, flexWrap: 'wrap' }}>
+              <span style={{ font: '500 11px var(--font-mono)', color: 'rgba(40,30,10,.65)' }}>
+                <b style={{ color: '#221c12' }}>{dev.followers}</b> seguidor{dev.followers === 1 ? '' : 'es'}
+                {' · '}
+                <b style={{ color: '#221c12' }}>{dev.following}</b> seguindo
+              </span>
+              {canFollow ? (
+                <FollowButton
+                  handle={dev.handle.replace(/^@/, '')}
+                  authed={!!user}
+                  initialFollowing={viewerFollows}
+                />
+              ) : null}
+            </div>
 
             {/* level + xp */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 14 }}>
