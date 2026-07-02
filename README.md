@@ -10,6 +10,8 @@ editoriais e botões que afundam ao clicar.
 Projeto criado com [Next.js](https://nextjs.org) (App Router, TypeScript,
 Tailwind CSS v4), iniciado via `create-next-app`.
 
+Próximos passos de gamificação estão em [`ROADMAP.md`](ROADMAP.md).
+
 ## Telas
 
 | Rota | Tela | Descrição |
