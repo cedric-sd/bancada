@@ -59,9 +59,12 @@ Fecha o loop: o usuário precisa *sentir* o efeito das ações.
 
 - ✓ **Notificações:** "recebeu ★5", "alguém votou" (tabela `notifications`;
   selo de não-lidas no header; página `/notificacoes`). Geradas na ação real
-  (voto novo / primeira avaliação). Falta ainda o aviso de posição ("subiu para
-  #3"), que depende da variação de posição abaixo.
-- **Variação de posição:** `▲2 / ▼1` desde a semana passada, no placar e no card.
+  (voto novo / primeira avaliação).
+- ✓ **Variação de posição:** `▲2 / ▼1 / novo` na disputa da semana vs. a semana
+  passada, no pódio, na lista e no Hall da Fama. Calculada com precisão do
+  placar **semanal** (o all-time não tem histórico por data). Falta ainda a
+  *notificação* de posição ("subiu para #3") — agora que há a variação, é o
+  próximo passo natural.
 - **Juice:** confete ao bater marcos, celebração de level-up, animação no voto.
   A estética de "bancada física" combina com micro-interações satisfatórias.
 

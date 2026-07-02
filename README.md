@@ -48,6 +48,9 @@ direção visual da 1b, conforme o protótipo de referência.
   e arquivado no **Hall da Fama** — sem agendador: as semanas concluídas são
   "encerradas" de forma preguiçosa na leitura. Uma faixa no topo do placar mostra
   o líder da semana e quanto falta para encerrar.
+- **Variação de posição** (`▲/▼`): cada projeto mostra como se moveu na disputa
+  desta semana vs. a semana passada (`▲2` subiu, `▼1` caiu, `novo` entrou), no
+  placar (pódio e lista) e no Hall da Fama.
 - **Ordenação do placar** em abas: `top` (mais votados), `novos` (recentes) e
   `alta` (mais votos nos últimos 7 dias) — via `?ordem=`.
 - **Busca** (`?q=` em nome/resumo/autor) e **filtro por categoria** (`?cat=`);

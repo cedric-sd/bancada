@@ -6,7 +6,7 @@ import RankRow from '@/components/RankRow';
 import PlacarControls from '@/components/PlacarControls';
 import WeeklyBanner from '@/components/WeeklyBanner';
 import { listProjects, type SortKey } from '@/lib/projects';
-import { currentRace } from '@/lib/weekly';
+import { currentRace, weeklyMovementMap } from '@/lib/weekly';
 import { getCurrentUser } from '@/lib/auth';
 import { categories } from '@/lib/data';
 
@@ -28,6 +28,7 @@ export default async function Home({
   const authed = !!user;
   const all = listProjects(user?.id, { sort, cat: category, q: query });
   const race = currentRace();
+  const moves = weeklyMovementMap();
 
   // Pódio só na visão padrão (sem busca nem filtro de categoria).
   const filtering = !!query || (!!category && category !== 'Todos');
@@ -73,7 +74,9 @@ export default async function Home({
             flexWrap: 'wrap',
           }}
         >
-          {podium[1] ? <PodiumCard project={podium[1]} place={2} palette="cool" authed={authed} /> : null}
+          {podium[1] ? (
+            <PodiumCard project={podium[1]} place={2} palette="cool" authed={authed} move={moves[podium[1].slug]} />
+          ) : null}
           {podium[0] ? (
             <PodiumCard
               project={podium[0]}
@@ -81,10 +84,18 @@ export default async function Home({
               palette="warm"
               note={isTop ? 'líder · 3 sem.' : undefined}
               authed={authed}
+              move={moves[podium[0].slug]}
             />
           ) : null}
           {podium[2] ? (
-            <PodiumCard project={podium[2]} place={3} palette="sage" note={isTop ? 'IA · CLI' : undefined} authed={authed} />
+            <PodiumCard
+              project={podium[2]}
+              place={3}
+              palette="sage"
+              note={isTop ? 'IA · CLI' : undefined}
+              authed={authed}
+              move={moves[podium[2].slug]}
+            />
           ) : null}
         </div>
       ) : (
@@ -99,7 +110,7 @@ export default async function Home({
       {rest.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
           {rest.map((p) => (
-            <RankRow key={p.slug} project={p} authed={authed} />
+            <RankRow key={p.slug} project={p} authed={authed} move={moves[p.slug]} />
           ))}
         </div>
       ) : !showPodium ? (

@@ -13,7 +13,7 @@ jest.mock('next/navigation', () => ({
 // Camada de dados e sessão — mockadas para não tocar SQLite nem cookies.
 jest.mock('@/lib/auth', () => ({ getCurrentUser: jest.fn() }));
 jest.mock('@/lib/projects', () => ({ listProjects: jest.fn() }));
-jest.mock('@/lib/weekly', () => ({ currentRace: jest.fn() }));
+jest.mock('@/lib/weekly', () => ({ currentRace: jest.fn(), weeklyMovementMap: jest.fn(() => ({})) }));
 // NotificationsBell (no header do usuário logado) lê a contagem de não-lidas.
 jest.mock('@/lib/notifications', () => ({ unreadCount: jest.fn(() => 3) }));
 
