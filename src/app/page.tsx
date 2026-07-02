@@ -4,7 +4,9 @@ import UserMenu from '@/components/UserMenu';
 import PodiumCard from '@/components/PodiumCard';
 import RankRow from '@/components/RankRow';
 import PlacarControls from '@/components/PlacarControls';
+import WeeklyBanner from '@/components/WeeklyBanner';
 import { listProjects, type SortKey } from '@/lib/projects';
+import { currentRace } from '@/lib/weekly';
 import { getCurrentUser } from '@/lib/auth';
 import { categories } from '@/lib/data';
 
@@ -25,6 +27,7 @@ export default async function Home({
   const user = await getCurrentUser();
   const authed = !!user;
   const all = listProjects(user?.id, { sort, cat: category, q: query });
+  const race = currentRace();
 
   // Pódio só na visão padrão (sem busca nem filtro de categoria).
   const filtering = !!query || (!!category && category !== 'Todos');
@@ -49,6 +52,9 @@ export default async function Home({
         <Logo subtitle="PLACAR DA SEMANA" />
         <UserMenu user={user} />
       </div>
+
+      {/* ciclo semanal: líder atual + atalho para o Hall da Fama */}
+      <WeeklyBanner race={race} />
 
       {/* controles: ordenação, busca e categorias */}
       <div style={{ marginBottom: 22 }}>

@@ -13,12 +13,33 @@ jest.mock('next/navigation', () => ({
 // Camada de dados e sessão — mockadas para não tocar SQLite nem cookies.
 jest.mock('@/lib/auth', () => ({ getCurrentUser: jest.fn() }));
 jest.mock('@/lib/projects', () => ({ listProjects: jest.fn() }));
+jest.mock('@/lib/weekly', () => ({ currentRace: jest.fn() }));
 
 import { getCurrentUser } from '@/lib/auth';
 import { listProjects } from '@/lib/projects';
+import { currentRace, type WeeklyRace } from '@/lib/weekly';
 
 const mockedGetUser = getCurrentUser as jest.MockedFunction<typeof getCurrentUser>;
 const mockedList = listProjects as jest.MockedFunction<typeof listProjects>;
+const mockedRace = currentRace as jest.MockedFunction<typeof currentRace>;
+
+const leaderEntry = {
+  rank: 1,
+  slug: 'aurora',
+  name: 'Aurora',
+  blurb: '',
+  author: 'Mara Klein',
+  handle: '@marakt',
+  hasImage: false,
+  weeklyVotes: 12,
+};
+const race: WeeklyRace = {
+  key: '2024-06-24',
+  range: '24 jun – 30 jun',
+  endsIn: '3d',
+  top: [leaderEntry],
+  leader: leaderEntry,
+};
 
 function makeProject(over: Partial<Project> = {}): Project {
   return {
@@ -64,6 +85,7 @@ async function renderHome(params: Record<string, string> = {}) {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockedRace.mockReturnValue(race);
 });
 
 describe('Home (placar)', () => {
@@ -86,6 +108,19 @@ describe('Home (placar)', () => {
     // ações de conta (deslogado)
     expect(screen.getByRole('link', { name: 'Entrar' })).toBeInTheDocument();
     expect(screen.getByText('+ Publicar')).toBeInTheDocument();
+  });
+
+  it('mostra a faixa do ciclo semanal com o líder e atalho para o Hall da Fama', async () => {
+    mockedGetUser.mockResolvedValue(null);
+    mockedList.mockReturnValue(sample);
+
+    await renderHome();
+
+    expect(screen.getByText('EM DISPUTA')).toBeInTheDocument();
+    expect(screen.getByText('LÍDER DA SEMANA')).toBeInTheDocument();
+    expect(screen.getByText('▲ 12')).toBeInTheDocument();
+    const hall = screen.getByRole('link', { name: /HALL DA FAMA/ });
+    expect(hall).toHaveAttribute('href', '/hall-da-fama');
   });
 
   it('renderiza pódio (top 3) e o restante da lista na visão padrão', async () => {
