@@ -1,4 +1,5 @@
 import { getDb } from './db';
+import { notifyProjectEvent } from './notifications';
 
 export type ReviewView = {
   id: number;
@@ -95,17 +96,24 @@ export function upsertReview(
   stars: number,
   text: string,
 ): 'ok' | 'not_found' {
+  const db = getDb();
   const projectId = projectIdBySlug(slug);
   if (projectId === undefined) return 'not_found';
 
-  getDb()
-    .prepare(
-      `INSERT INTO reviews (project_id, user_id, stars, text, updated_at)
+  // Detecta se é a primeira avaliação do usuário (para notificar só uma vez).
+  const existed = db
+    .prepare('SELECT 1 FROM reviews WHERE project_id = ? AND user_id = ?')
+    .get(projectId, userId);
+
+  db.prepare(
+    `INSERT INTO reviews (project_id, user_id, stars, text, updated_at)
        VALUES (@projectId, @userId, @stars, @text, datetime('now'))
        ON CONFLICT(project_id, user_id)
        DO UPDATE SET stars = @stars, text = @text, updated_at = datetime('now')`,
-    )
-    .run({ projectId, userId, stars, text: text.trim() });
+  ).run({ projectId, userId, stars, text: text.trim() });
+
+  // Avisa o dono na primeira avaliação (edições não geram novo aviso).
+  if (!existed) notifyProjectEvent(projectId, userId, 'review', { stars });
   return 'ok';
 }
 

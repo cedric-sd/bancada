@@ -102,6 +102,20 @@ function init(): Database.Database {
       votes      INTEGER NOT NULL DEFAULT 0,
       settled_at TEXT    NOT NULL DEFAULT (datetime('now'))
     );
+
+    -- Notificações (feedback): eventos direcionados a um usuário (dono do projeto).
+    CREATE TABLE IF NOT EXISTS notifications (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind         TEXT    NOT NULL,
+      project_slug TEXT,
+      project_name TEXT,
+      actor        TEXT,
+      meta         TEXT,
+      read         INTEGER NOT NULL DEFAULT 0,
+      created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, read);
   `);
 
   // Migrações para bancos criados antes destas colunas.
