@@ -144,7 +144,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
               authed={!!user}
               variant="detail"
             />
-            <DarkButton size="lg">
+            <DarkButton size="lg" href={project.url ?? undefined}>
               ABRIR <span style={{ fontSize: 14 }}>↗</span>
             </DarkButton>
           </div>

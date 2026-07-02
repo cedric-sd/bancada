@@ -18,6 +18,7 @@ type Row = {
   forks: string;
   xp_for_author: string;
   owner_id: number | null;
+  url: string | null;
   created_at: string;
   voted?: number;
   has_image?: number;
@@ -35,6 +36,7 @@ export type CreateProjectInput = {
   description?: string;
   tags?: string[];
   stars?: string;
+  url?: string | null;
 };
 
 export type UpdateProjectInput = Partial<
@@ -72,6 +74,7 @@ function toProject(row: Row, rank: number): Project {
     hasImage: !!row.has_image,
     rating: row.rating ?? 0,
     reviewCount: row.review_count ?? 0,
+    url: row.url,
   };
 }
 
@@ -173,9 +176,9 @@ export function createProject(input: CreateProjectInput): Project {
 
   db.prepare(`
     INSERT INTO projects
-      (slug, name, blurb, author, handle, stars, votes, cat, badge, lvl, description, tags, forks, xp_for_author, owner_id)
+      (slug, name, blurb, author, handle, stars, votes, cat, badge, lvl, description, tags, forks, xp_for_author, owner_id, url)
     VALUES
-      (@slug, @name, @blurb, @author, @handle, @stars, 0, @cat, 'NOVO', 1, @description, @tags, '0', '+0', @ownerId)
+      (@slug, @name, @blurb, @author, @handle, @stars, 0, @cat, 'NOVO', 1, @description, @tags, '0', '+0', @ownerId, @url)
   `).run({
     slug,
     name,
@@ -187,6 +190,7 @@ export function createProject(input: CreateProjectInput): Project {
     description: (input.description ?? '').trim(),
     tags: JSON.stringify(input.tags ?? []),
     ownerId: input.ownerId ?? null,
+    url: input.url?.trim() || null,
   });
 
   return getProjectBySlug(slug)!;
@@ -207,6 +211,7 @@ export function updateProject(slug: string, patch: UpdateProjectInput): Project 
     badge: 'badge',
     votes: 'votes',
     lvl: 'lvl',
+    url: 'url',
   };
 
   const sets: string[] = [];

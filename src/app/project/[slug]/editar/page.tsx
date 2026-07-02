@@ -40,6 +40,7 @@ export default async function EditarProjetoPage({
           description: project.description,
           tags: project.tags.join(', '),
           stars: project.stars,
+          url: project.url ?? '',
         }}
       />
     </Board>

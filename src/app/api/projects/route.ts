@@ -55,6 +55,7 @@ export async function POST(request: Request) {
     description: body.description,
     stars: body.stars,
     tags,
+    url: typeof body.url === 'string' ? body.url : undefined,
   });
 
   return NextResponse.json({ project }, { status: 201 });

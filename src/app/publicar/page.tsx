@@ -1,14 +1,16 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Board from '@/components/Board';
-import ProjectForm from '@/components/ProjectForm';
-import { getCurrentUser } from '@/lib/auth';
+import PublicarForm from '@/components/PublicarForm';
+import { getCurrentUser, getGithubLogin } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export default async function PublicarPage() {
   const user = await getCurrentUser();
   if (!user) redirect('/entrar?next=/publicar');
+
+  const hasGithub = !!getGithubLogin(user.id);
 
   return (
     <Board maxWidth={740}>
@@ -18,7 +20,7 @@ export default async function PublicarPage() {
       >
         ‹ voltar ao placar
       </Link>
-      <ProjectForm mode="create" />
+      <PublicarForm hasGithub={hasGithub} />
     </Board>
   );
 }
