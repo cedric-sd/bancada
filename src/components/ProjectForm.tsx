@@ -35,6 +35,7 @@ export type ProjectFormValues = {
   description: string;
   tags: string;
   stars: string;
+  url: string;
 };
 
 const empty: ProjectFormValues = {
@@ -44,6 +45,7 @@ const empty: ProjectFormValues = {
   description: '',
   tags: '',
   stars: '',
+  url: '',
 };
 
 /**
@@ -85,6 +87,7 @@ export default function ProjectForm({
       blurb: form.blurb,
       description: form.description,
       stars: form.stars,
+      url: form.url,
       tags: form.tags
         .split(',')
         .map((t) => t.trim())
@@ -186,6 +189,16 @@ export default function ProjectForm({
             <input style={fieldStyle} value={form.stars} onChange={set('stars')} placeholder="Ex.: 1.2k" />
           </Field>
         </div>
+
+        <Field label="URL DO PROJETO (OPCIONAL)">
+          <input
+            style={fieldStyle}
+            value={form.url}
+            onChange={set('url')}
+            placeholder="https://github.com/voce/projeto"
+            inputMode="url"
+          />
+        </Field>
 
         <Field label="RESUMO (UMA LINHA)">
           <input style={fieldStyle} value={form.blurb} onChange={set('blurb')} placeholder="O que ele faz, em uma frase." />

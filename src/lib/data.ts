@@ -24,6 +24,8 @@ export type Project = {
   // avaliações da comunidade
   rating: number;
   reviewCount: number;
+  // link externo (ex.: repositório no GitHub)
+  url: string | null;
 };
 
 
@@ -54,7 +56,7 @@ const slugify = (s: string) => s.toLowerCase();
 // fonte de verdade é o SQLite (ver src/lib/db.ts e src/lib/projects.ts).
 export type SeedProject = Omit<
   Project,
-  'ownerId' | 'voted' | 'hasImage' | 'rating' | 'reviewCount'
+  'ownerId' | 'voted' | 'hasImage' | 'rating' | 'reviewCount' | 'url'
 >;
 
 export const seedProjects: SeedProject[] = [

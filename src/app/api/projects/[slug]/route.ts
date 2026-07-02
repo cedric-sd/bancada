@@ -53,7 +53,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ sl
 
   // Só campos editáveis pelo dono (autor/handle/votos não são alteráveis aqui).
   const patch: UpdateProjectInput = {};
-  for (const key of ['name', 'blurb', 'cat', 'description', 'stars'] as const) {
+  for (const key of ['name', 'blurb', 'cat', 'description', 'stars', 'url'] as const) {
     if (typeof body[key] === 'string') patch[key] = body[key] as string;
   }
   if (Array.isArray(body.tags)) {

@@ -1,5 +1,7 @@
 # Bancada
 
+![Bancada — vitrine gamificada de side projects](docs/banner.png)
+
 **Bancada** é uma vitrine gamificada de side projects: um placar semanal com
 pódio, votos e XP para a comunidade de builders. A interface segue uma metáfora
 física de "bancada de trabalho" — madeira texturizada, papel, carimbos
@@ -57,6 +59,7 @@ Outros comandos:
 npm run build   # build de produção
 npm run start   # serve o build de produção
 npm run lint    # ESLint
+npm test        # testes unitários (Jest)
 ```
 
 ### Login com GitHub (opcional)
@@ -74,6 +77,11 @@ GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/github/callback
 Crie um **OAuth App** em GitHub → Settings → Developer settings, com o
 "Authorization callback URL" igual ao `GITHUB_REDIRECT_URI`. No primeiro login,
 a conta é criada com o handle do GitHub e o avatar é importado.
+
+Quem entra com GitHub pode **importar um repositório público** direto na tela de
+publicar: o formulário é pré-preenchido com nome, descrição, tags, estrelas e a
+URL do projeto. (Opcional: defina `GITHUB_TOKEN` para elevar o limite de taxa da
+listagem de repositórios.)
 
 ## Estrutura
 

@@ -106,14 +106,26 @@ export function findOrCreateGithubUser(profile: {
   const existing = db.prepare('SELECT id, handle FROM users WHERE github_id = ?').get(profile.githubId) as
     | { id: number; handle: string }
     | undefined;
-  if (existing) return existing;
+  if (existing) {
+    // Mantém o login do GitHub atualizado (usado para listar repositórios).
+    db.prepare('UPDATE users SET github_login = ? WHERE id = ?').run(profile.login, existing.id);
+    return existing;
+  }
 
   const handle = uniqueUserHandle(profile.login);
   const name = (profile.name || profile.login).trim();
   const info = db
-    .prepare("INSERT INTO users (handle, name, password_hash, github_id) VALUES (?, ?, '', ?)")
-    .run(handle, name, profile.githubId);
+    .prepare("INSERT INTO users (handle, name, password_hash, github_id, github_login) VALUES (?, ?, '', ?, ?)")
+    .run(handle, name, profile.githubId, profile.login);
   return { id: Number(info.lastInsertRowid), handle };
+}
+
+/** Login do GitHub vinculado à conta (ou null). */
+export function getGithubLogin(userId: number): string | null {
+  const row = getDb().prepare('SELECT github_login FROM users WHERE id = ?').get(userId) as
+    | { github_login: string | null }
+    | undefined;
+  return row?.github_login ?? null;
 }
 
 export type CreateUserResult = { ok: true; user: User } | { ok: false; error: string };

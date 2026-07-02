@@ -40,6 +40,14 @@ export default function DarkButton({
   };
 
   if (href) {
+    // Links externos (http/https) abrem em nova aba; internos usam next/link.
+    if (/^https?:\/\//i.test(href)) {
+      return (
+        <a href={href} target="_blank" rel="noreferrer noopener" className="press" style={baseStyle}>
+          {children}
+        </a>
+      );
+    }
     return (
       <Link href={href} className="press" style={baseStyle}>
         {children}

@@ -42,6 +42,7 @@ function makeProject(over: Partial<Project> = {}): Project {
     hasImage: false,
     rating: 0,
     reviewCount: 0,
+    url: null,
     ...over,
   };
 }
