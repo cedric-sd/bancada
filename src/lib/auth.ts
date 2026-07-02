@@ -2,6 +2,7 @@ import 'server-only';
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { getDb } from './db';
+import { touchActivity } from './streak';
 
 export const SESSION_COOKIE = 'bancada_session';
 const SESSION_DAYS = 30;
@@ -240,5 +241,8 @@ export const SESSION_MAX_AGE = SESSION_DAYS * 864e2;
 /** Usuário autenticado a partir do cookie de sessão (Server Components / rotas). */
 export async function getCurrentUser(): Promise<User | null> {
   const store = await cookies();
-  return userFromToken(store.get(SESSION_COOKIE)?.value);
+  const user = userFromToken(store.get(SESSION_COOKIE)?.value);
+  // Marca presença do dia (streak + XP de login diário) quando autenticado.
+  if (user) touchActivity(user.id);
+  return user;
 }

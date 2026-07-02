@@ -40,9 +40,12 @@ direção visual da 1b, conforme o protótipo de referência.
 - **Reviews reais**: avaliações (1–5 estrelas + texto) da comunidade, uma por
   usuário por projeto; não é possível avaliar o próprio projeto.
 - **XP por participação**: além do XP de votos recebidos e projetos, votar (+2),
-  avaliar (+5) e publicar (+25) rendem XP. Anti-farm por índice único
-  (`user_id, kind, ref`): no máximo um ganho por alvo — reverter e refazer a ação
-  não gera XP de novo. O perfil mostra o XP de participação acumulado.
+  avaliar (+5), publicar (+25) e a **presença diária** (+3) rendem XP. Anti-farm
+  por índice único (`user_id, kind, ref`): no máximo um ganho por alvo — reverter
+  e refazer a ação (ou recarregar a página no mesmo dia) não gera XP de novo.
+- **Streak**: dias consecutivos ativo, derivado da presença diária. O perfil
+  mostra um selo 🔥 com o streak atual (segue "vivo" enquanto você aparece a cada
+  dia; quebra se passar um dia sem visitar).
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
 - **Notificações**: quando alguém vota ou avalia um projeto seu, o dono recebe
   um aviso (feed em `/notificacoes` + selo de não-lidas no sino do header). Só a

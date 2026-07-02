@@ -126,11 +126,29 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
           </div>
 
           <div style={{ flex: 1, minWidth: 220 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <h1 style={{ margin: 0, font: '900 28px/1 var(--font-archivo)', color: '#221c12', textShadow: '0 1px 0 rgba(255,255,255,.5)' }}>
                 {dev.name}
               </h1>
               <Stamp label={dev.badge} size="md" rotate={-4} style={{ padding: '3px 7px', borderRadius: 4 }} />
+              {dev.streak > 0 ? (
+                <span
+                  title={`${dev.streak} dia${dev.streak > 1 ? 's' : ''} seguido${dev.streak > 1 ? 's' : ''} na bancada`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    font: '800 11px var(--font-mono)',
+                    color: '#a24a1e',
+                    background: '#f7e4cf',
+                    border: '1px solid #e0b98e',
+                    borderRadius: 20,
+                    padding: '3px 9px',
+                  }}
+                >
+                  🔥 {dev.streak}d
+                </span>
+              ) : null}
             </div>
             <div style={{ font: '400 14px/1.4 var(--font-news)', color: '#5a4f3c', marginTop: 5 }}>{dev.bio}</div>
 
@@ -182,7 +200,7 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
                 </div>
                 {dev.participation > 0 ? (
                   <div style={{ font: '600 9px var(--font-mono)', color: '#557a38', marginTop: 3 }}>
-                    +{dev.participation.toLocaleString('pt-BR')} XP de participação · votar, avaliar, publicar
+                    +{dev.participation.toLocaleString('pt-BR')} XP de participação · votar, avaliar, publicar, presença
                   </div>
                 ) : null}
               </div>
