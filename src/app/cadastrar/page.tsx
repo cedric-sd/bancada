@@ -1,15 +1,16 @@
 import Link from 'next/link';
 import Board from '@/components/Board';
 import AuthForm from '@/components/AuthForm';
+import { githubConfigured } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export default async function CadastrarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; erro?: string }>;
 }) {
-  const { next } = await searchParams;
+  const { next, erro } = await searchParams;
   return (
     <Board maxWidth={520}>
       <Link
@@ -18,7 +19,7 @@ export default async function CadastrarPage({
       >
         ‹ voltar ao placar
       </Link>
-      <AuthForm mode="register" next={next} />
+      <AuthForm mode="register" next={next} githubEnabled={githubConfigured()} initialError={erro} />
     </Board>
   );
 }

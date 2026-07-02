@@ -24,8 +24,8 @@ body {
 }
 
 body {
-  /* mesa de trabalho — fundo neutro que emoldura a "bancada" */
-  background: #e7e1d3;
+  /* madeira da bancada — cobre a tela inteira, sem moldura neutra */
+  background: var(--board);
   color: var(--ink);
   font-family: var(--font-archivo), system-ui, sans-serif;
   min-height: 100vh;

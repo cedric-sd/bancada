@@ -70,6 +70,52 @@ export function getUserByHandle(handle: string): UserRow | undefined {
     .get(cleanHandle(handle)) as UserRow | undefined;
 }
 
+// Handle único a partir de uma base (para logins via GitHub).
+function uniqueUserHandle(base: string): string {
+  const db = getDb();
+  const exists = db.prepare('SELECT 1 FROM users WHERE handle = ?');
+  const clean = cleanHandle(base).replace(/[^a-z0-9_]/g, '') || 'dev';
+  let handle = clean;
+  let n = 2;
+  while (exists.get(handle)) handle = `${clean}${n++}`;
+  return handle;
+}
+
+// --- login com GitHub ---
+
+export function githubConfigured(): boolean {
+  return !!(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET);
+}
+
+export function getUserByGithubId(githubId: number): { id: number } | undefined {
+  return getDb().prepare('SELECT id FROM users WHERE github_id = ?').get(githubId) as
+    | { id: number }
+    | undefined;
+}
+
+/**
+ * Encontra o usuário pela conta do GitHub ou cria um novo (handle derivado do
+ * login, sem senha). Retorna id e handle (sem @).
+ */
+export function findOrCreateGithubUser(profile: {
+  githubId: number;
+  login: string;
+  name?: string | null;
+}): { id: number; handle: string } {
+  const db = getDb();
+  const existing = db.prepare('SELECT id, handle FROM users WHERE github_id = ?').get(profile.githubId) as
+    | { id: number; handle: string }
+    | undefined;
+  if (existing) return existing;
+
+  const handle = uniqueUserHandle(profile.login);
+  const name = (profile.name || profile.login).trim();
+  const info = db
+    .prepare("INSERT INTO users (handle, name, password_hash, github_id) VALUES (?, ?, '', ?)")
+    .run(handle, name, profile.githubId);
+  return { id: Number(info.lastInsertRowid), handle };
+}
+
 export type CreateUserResult = { ok: true; user: User } | { ok: false; error: string };
 
 export function createUser(name: string, handle: string, password: string): CreateUserResult {
