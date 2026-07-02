@@ -1,5 +1,5 @@
 import { getDb } from './db';
-import { type Dev, type Project } from './data';
+import { categories, type Dev, type Project } from './data';
 import { notifyProjectEvent } from './notifications';
 import { awardXp, participationXp } from './xp';
 import { currentStreak } from './streak';
@@ -172,6 +172,20 @@ export function getProjectBySlug(slug: string, userId?: number | null): Project 
 /** Projetos publicados por um usuário, mantendo o rank global do placar. */
 export function listProjectsByOwner(userId: number): Project[] {
   return listProjects(userId).filter((p) => p.ownerId === userId);
+}
+
+export type CategoryRanking = { cat: string; projects: Project[] };
+
+/**
+ * Ranking por categoria: para cada categoria com projetos, a lista ordenada
+ * (mais votados primeiro) — o 1º é o "melhor em {categoria}". Ignora "Todos" e
+ * categorias vazias.
+ */
+export function categoryRankings(): CategoryRanking[] {
+  return categories
+    .filter((c) => c !== 'Todos')
+    .map((cat) => ({ cat, projects: listProjects(undefined, { cat }) }))
+    .filter((g) => g.projects.length > 0);
 }
 
 export function createProject(input: CreateProjectInput): Project {

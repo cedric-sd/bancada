@@ -106,8 +106,9 @@ Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
   escassez melhora a qualidade do ranking e reduz spam/conluio.
 - **Anti-abuso:** impedir auto-voto/auto-review (já bloqueado p/ review do próprio
   projeto), detectar padrões de conluio.
-- **Rankings por categoria** ("melhor em Design") e **seguir devs** → rivalidade
-  saudável e leaderboards de nicho.
+- ✓ **Rankings por categoria** ("melhor em Design"): página `/categorias` com o
+  campeão + vice-campeões de cada categoria (`categoryRankings`). Falta **seguir
+  devs** → rivalidade saudável e leaderboards de nicho.
 - **Comparar com amigos / rivais.**
 
 ## Sequência recomendada
