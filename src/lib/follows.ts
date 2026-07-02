@@ -20,6 +20,15 @@ export function isFollowing(followerId: number, followingId: number): boolean {
     .get(followerId, followingId);
 }
 
+/** Ids dos devs que o usuário segue. */
+export function followingIds(userId: number): number[] {
+  return (
+    getDb().prepare('SELECT following_id AS id FROM follows WHERE follower_id = ?').all(userId) as {
+      id: number;
+    }[]
+  ).map((r) => r.id);
+}
+
 /** Contagens de seguidores e de quem o usuário segue. */
 export function followCounts(userId: number): { followers: number; following: number } {
   const db = getDb();
