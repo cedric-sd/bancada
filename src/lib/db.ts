@@ -195,12 +195,14 @@ function seedWeeklyVotes(db: Database.Database) {
     (db.prepare('SELECT id FROM projects WHERE slug = ?').get(slug) as { id: number }).id;
 
   const curWeek = startOfWeek(new Date());
-  // [offset de semana, [ [slug, quantidade], ... ]]
+  // [offset de semana, [ [slug, quantidade], ... ]]. As duas últimas semanas
+  // compartilham projetos de propósito, para o placar mostrar ▲/▼ (variação
+  // de posição) além de "novo".
   const plan: [number, [string, number][]][] = [
     [-3, [['quokka', 5], ['lumen', 2], ['refactr', 1]]],
     [-2, [['refactr', 5], ['markdownr', 3], ['lumen', 2]]],
-    [-1, [['lumen', 6], ['stipple', 3], ['cronos', 2]]],
-    [0, [['lumen', 5], ['markdownr', 3], ['pixelforge', 2], ['quokka', 2]]],
+    [-1, [['markdownr', 5], ['lumen', 4], ['quokka', 2]]],
+    [0, [['lumen', 5], ['quokka', 4], ['markdownr', 3], ['pixelforge', 2]]],
   ];
 
   const nextVoter: Record<string, number> = {}; // por projeto, para não repetir eleitor

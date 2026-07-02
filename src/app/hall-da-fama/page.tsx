@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Board from '@/components/Board';
 import BancadaMark from '@/components/BancadaMark';
 import Stamp from '@/components/Stamp';
+import Movement from '@/components/Movement';
 import { currentRace, listChampions } from '@/lib/weekly';
 
 export const dynamic = 'force-dynamic';
@@ -117,7 +118,10 @@ export default async function HallDaFamaPage() {
                   {e.rank}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ font: '900 15px var(--font-archivo)', color: '#221c12' }}>{e.name}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ font: '900 15px var(--font-archivo)', color: '#221c12' }}>{e.name}</span>
+                    <Movement move={e.move} />
+                  </div>
                   <div style={{ font: '500 10px var(--font-mono)', color: 'rgba(40,30,10,.55)', marginTop: 1 }}>
                     {e.author}
                   </div>

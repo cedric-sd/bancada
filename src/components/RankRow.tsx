@@ -1,12 +1,22 @@
 import Link from 'next/link';
 import type { Project } from '@/lib/data';
+import type { Move } from '@/lib/weekly';
 import VoteButton from './VoteButton';
 import Rating from './Rating';
+import Movement from './Movement';
 
 /**
  * Linha do placar (posições fora do pódio). Voto físico + rank gigante.
  */
-export default function RankRow({ project, authed }: { project: Project; authed: boolean }) {
+export default function RankRow({
+  project,
+  authed,
+  move,
+}: {
+  project: Project;
+  authed: boolean;
+  move?: Move;
+}) {
   return (
     <div
       style={{
@@ -85,6 +95,7 @@ export default function RankRow({ project, authed }: { project: Project; authed:
             {project.cat}
           </span>
           <Rating rating={project.rating} count={project.reviewCount} size={10} />
+          <Movement move={move} />
         </div>
         <div style={{ font: '400 13px/1.3 var(--font-news)', color: '#5a4f3c', marginTop: 2 }}>
           {project.blurb}

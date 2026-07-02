@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import type { Project } from '@/lib/data';
+import type { Move } from '@/lib/weekly';
 import VoteButton from './VoteButton';
 import Stamp from './Stamp';
 import Thumb from './Thumb';
 import Rating from './Rating';
+import Movement from './Movement';
 
 const medals = {
   1: {
@@ -29,12 +31,14 @@ export default function PodiumCard({
   palette,
   note,
   authed,
+  move,
 }: {
   project: Project;
   place: 1 | 2 | 3;
   palette: 'warm' | 'cool' | 'sage';
   note?: string;
   authed: boolean;
+  move?: Move;
 }) {
   const featured = place === 1;
   const medal = medals[place];
@@ -105,6 +109,7 @@ export default function PodiumCard({
             {note}
           </span>
         )}
+        <Movement move={move} style={{ marginLeft: 'auto' }} />
       </div>
 
       <Thumb

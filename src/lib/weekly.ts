@@ -9,6 +9,9 @@ import {
   weekKey,
 } from './week';
 
+/** Movimento de um projeto na disputa da semana vs. a semana passada. */
+export type Move = { delta: number; isNew: boolean };
+
 export type WeeklyEntry = {
   rank: number;
   slug: string;
@@ -18,6 +21,7 @@ export type WeeklyEntry = {
   handle: string;
   hasImage: boolean;
   weeklyVotes: number;
+  move?: Move;
 };
 
 export type Champion = {
@@ -49,6 +53,35 @@ type StandingRow = {
 
 export function currentWeekKey(): string {
   return weekKey(new Date());
+}
+
+/**
+ * Compara duas classificações (listas de slugs em ordem de rank) e devolve, por
+ * projeto da classificação atual, o movimento em posições. `delta` positivo =
+ * subiu; negativo = caiu; `isNew` = não estava na semana anterior. Puro.
+ */
+export function movementBetween(
+  current: string[],
+  previous: string[],
+): Record<string, Move> {
+  const prevRank = new Map<string, number>();
+  previous.forEach((slug, i) => prevRank.set(slug, i + 1));
+
+  const out: Record<string, Move> = {};
+  current.forEach((slug, i) => {
+    const pr = prevRank.get(slug);
+    out[slug] = pr === undefined ? { delta: 0, isNew: true } : { delta: pr - (i + 1), isNew: false };
+  });
+  return out;
+}
+
+/** Movimento de cada projeto na disputa desta semana vs. a semana passada. */
+export function weeklyMovementMap(now: Date = new Date()): Record<string, Move> {
+  const curKey = weekKey(now);
+  const prevKey = weekKey(addWeeks(startOfWeek(now), -1));
+  const current = weeklyStandings(curKey).map((e) => e.slug);
+  const previous = weeklyStandings(prevKey).map((e) => e.slug);
+  return movementBetween(current, previous);
 }
 
 /** Projetos ordenados pelos votos recebidos dentro da semana `key`. */
@@ -146,7 +179,10 @@ export function listChampions(): Champion[] {
 /** A disputa da semana atual: top da semana + quanto falta para encerrar. */
 export function currentRace(): WeeklyRace {
   const key = currentWeekKey();
-  const top = weeklyStandings(key).slice(0, 3);
+  const moves = weeklyMovementMap();
+  const top = weeklyStandings(key)
+    .slice(0, 3)
+    .map((e) => ({ ...e, move: moves[e.slug] }));
   return {
     key,
     range: formatWeekRange(key),
