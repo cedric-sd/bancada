@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { confettiBurst, crossedMilestone, sparkAt } from '@/lib/juice';
 
 const parse = (s: string) => parseInt(s.replace(/\D/g, ''), 10) || 0;
 const format = (n: number) => n.toLocaleString('pt-BR');
@@ -31,11 +32,13 @@ export default function VoteButton({
   variant?: 'column' | 'pill' | 'detail' | 'lg';
 }) {
   const router = useRouter();
+  const btnRef = useRef<HTMLButtonElement>(null);
   // Estado local sincronizado com o servidor via padrão de reset por prop.
   const [count, setCount] = useState(parse(votes));
   const [isVoted, setIsVoted] = useState(voted);
   const [prev, setPrev] = useState({ votes, voted });
   const [pending, setPending] = useState(false);
+  const [pop, setPop] = useState(0); // muda a cada voto para reiniciar o "pop"
 
   if (prev.votes !== votes || prev.voted !== voted) {
     setPrev({ votes, voted });
@@ -55,16 +58,27 @@ export default function VoteButton({
     }
 
     const next = !isVoted;
+    const before = count; // total antes do voto (para detectar marco)
     setPending(true);
     setIsVoted(next);
     setCount((c) => Math.max(0, c + (next ? 1 : -1)));
+
+    // Juice imediato ao dar upvote: pop do ▲ + faíscas saindo do botão.
+    if (next) {
+      setPop((p) => p + 1);
+      const r = btnRef.current?.getBoundingClientRect();
+      if (r) sparkAt(r.left + r.width / 2, r.top + r.height / 2);
+    }
 
     try {
       const res = await fetch(`/api/projects/${slug}/vote`, { method: next ? 'POST' : 'DELETE' });
       if (!res.ok) throw new Error('falha ao votar');
       const data = await res.json();
-      setCount(parse(data.project.votes));
+      const serverCount = parse(data.project.votes);
+      setCount(serverCount);
       setIsVoted(data.project.voted);
+      // Confete quando o voto empurra o total por cima de um marco.
+      if (next && crossedMilestone(before, serverCount)) confettiBurst();
       router.refresh();
     } catch {
       // Reverte a atualização otimista em caso de erro.
@@ -80,6 +94,7 @@ export default function VoteButton({
   if (variant === 'pill') {
     return (
       <button
+        ref={btnRef}
         className="press"
         onClick={toggle}
         aria-pressed={isVoted}
@@ -96,7 +111,10 @@ export default function VoteButton({
           ...(isVoted ? { boxShadow: '0 2px 0 #b1925e,inset 0 1px 0 rgba(255,255,255,.7),0 0 0 2px #4f8a3a inset' } : null),
         }}
       >
-        ▲ {display}
+        <span key={pop} className={pop ? 'vote-pop' : undefined} style={{ color: isVoted ? '#4f8a3a' : undefined }}>
+          ▲
+        </span>{' '}
+        {display}
       </button>
     );
   }
@@ -108,6 +126,7 @@ export default function VoteButton({
 
   return (
     <button
+      ref={btnRef}
       className="press"
       onClick={toggle}
       aria-pressed={isVoted}
@@ -127,7 +146,13 @@ export default function VoteButton({
         flex: 'none',
       }}
     >
-      <span style={{ fontSize: dims.arrow, lineHeight: 1, color: isVoted ? '#4f8a3a' : undefined }}>▲</span>
+      <span
+        key={pop}
+        className={pop ? 'vote-pop' : undefined}
+        style={{ fontSize: dims.arrow, lineHeight: 1, color: isVoted ? '#4f8a3a' : undefined }}
+      >
+        ▲
+      </span>
       <span style={{ font: `800 ${dims.num}px var(--font-mono)` }}>{display}</span>
       {variant === 'detail' ? (
         <span style={{ font: '500 8px var(--font-mono)', color: 'rgba(40,30,10,.55)', marginTop: 1 }}>
