@@ -180,6 +180,11 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
                 <div style={{ font: '500 9px var(--font-mono)', color: 'rgba(40,30,10,.5)', marginTop: 5 }}>
                   faltam {remaining} XP para o nível {dev.level + 1}
                 </div>
+                {dev.participation > 0 ? (
+                  <div style={{ font: '600 9px var(--font-mono)', color: '#557a38', marginTop: 3 }}>
+                    +{dev.participation.toLocaleString('pt-BR')} XP de participação · votar, avaliar, publicar
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>

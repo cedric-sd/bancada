@@ -116,6 +116,20 @@ function init(): Database.Database {
       created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
     );
     CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, read);
+
+    -- XP de participação: um evento por ação recompensada (votar, avaliar,
+    -- publicar). O índice único (user_id, kind, ref) é o anti-farm: no máximo
+    -- um ganho por alvo (ex.: um voto por projeto).
+    CREATE TABLE IF NOT EXISTS xp_events (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind       TEXT    NOT NULL,
+      points     INTEGER NOT NULL,
+      ref        TEXT,
+      created_at TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_xp_events_dedupe
+      ON xp_events(user_id, kind, ref) WHERE ref IS NOT NULL;
   `);
 
   // Migrações para bancos criados antes destas colunas.

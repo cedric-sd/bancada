@@ -39,6 +39,10 @@ direção visual da 1b, conforme o protótipo de referência.
 - **Voto persistente e por usuário**: no máximo um voto por projeto por conta.
 - **Reviews reais**: avaliações (1–5 estrelas + texto) da comunidade, uma por
   usuário por projeto; não é possível avaliar o próprio projeto.
+- **XP por participação**: além do XP de votos recebidos e projetos, votar (+2),
+  avaliar (+5) e publicar (+25) rendem XP. Anti-farm por índice único
+  (`user_id, kind, ref`): no máximo um ganho por alvo — reverter e refazer a ação
+  não gera XP de novo. O perfil mostra o XP de participação acumulado.
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
 - **Notificações**: quando alguém vota ou avalia um projeto seu, o dono recebe
   um aviso (feed em `/notificacoes` + selo de não-lidas no sino do header). Só a
