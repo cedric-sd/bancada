@@ -2,8 +2,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Board from '@/components/Board';
 import Stamp from '@/components/Stamp';
+import UnlockCelebration from '@/components/UnlockCelebration';
 import { resolveDev, getProjectBySlug } from '@/lib/projects';
 import { getCurrentUser } from '@/lib/auth';
+import { settleUnlocks } from '@/lib/unlocks';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,12 +38,19 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
   const user = await getCurrentUser();
   const isSelf = !!user && user.handle.replace(/^@/, '').toLowerCase() === dev.handle.replace(/^@/, '').toLowerCase();
 
+  // Só o dono, ao ver o próprio perfil, "consome" e celebra os desbloqueios novos.
+  const justUnlockedIds = isSelf && user ? settleUnlocks(user.id, dev.achievements.map((a) => a.id)) : [];
+  const justUnlocked = dev.achievements
+    .filter((a) => justUnlockedIds.includes(a.id))
+    .map((a) => ({ label: a.label, color: a.color }));
+
   const pct = Math.min(100, Math.round((dev.xp / dev.xpNext) * 100));
   const remaining = (dev.xpNext - dev.xp).toLocaleString('pt-BR');
   const myProjects = dev.projectSlugs.map(getProjectBySlug).filter((p) => p !== undefined);
 
   return (
     <Board maxWidth={740}>
+      <UnlockCelebration items={justUnlocked} />
       <div
         style={{
           display: 'flex',

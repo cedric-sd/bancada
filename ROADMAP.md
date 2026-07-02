@@ -93,8 +93,9 @@ Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
 - ✓ **Novas conquistas:** *Curador* (votar em 10), *Crítico* (avaliar 5),
   *Comentado* (receber 5 avaliações). Faltam *Estreante da semana* e *Manteve o #1
   por N semanas* (dependem de histórico semanal por dev).
-- **Momento de desbloqueio:** toast/celebração ao ganhar uma conquista (reaproveita
-  o `confettiBurst` do juice).
+- ✓ **Momento de desbloqueio:** ao abrir o próprio perfil com conquistas
+  recém-obtidas, um toast + confete celebram cada uma **uma única vez** (tabela
+  `achievement_unlocks`; reaproveita o `confettiBurst` do juice).
 - **Níveis que valem algo:** título + moldura de perfil, selo destacado no card —
   nem que seja cosmético (progressão cosmética funciona).
 
