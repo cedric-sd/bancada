@@ -46,6 +46,10 @@ direção visual da 1b, conforme o protótipo de referência.
 - **Streak**: dias consecutivos ativo, derivado da presença diária. O perfil
   mostra um selo 🔥 com o streak atual (segue "vivo" enquanto você aparece a cada
   dia; quebra se passar um dia sem visitar).
+- **Missões da semana**: metas curtas (ex.: "vote em 3 projetos", "avalie 2",
+  "publique 1") com barra de progresso, recompensadas em XP ao concluir (uma vez
+  por semana). Aparecem no placar para quem está logado; o progresso vem das
+  ações reais da semana.
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
 - **Notificações**: quando alguém vota ou avalia um projeto seu, o dono recebe
   um aviso (feed em `/notificacoes` + selo de não-lidas no sino do header). Só a

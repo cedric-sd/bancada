@@ -17,19 +17,23 @@ export function pointsFor(kind: XpKind): number {
 }
 
 /**
- * Concede XP de participação a um usuário. Anti-farm: o índice único
- * (user_id, kind, ref) garante no máximo um ganho por alvo — um voto por
- * projeto, uma avaliação por projeto, um projeto publicado. Reverter e refazer
- * a ação não gera XP de novo. Retorna true se o XP foi concedido agora.
+ * Concede `points` XP a um usuário sob um `kind`/`ref`. Anti-farm: o índice
+ * único (user_id, kind, ref) garante no máximo um ganho por alvo — reverter e
+ * refazer a ação não repete. Retorna true se o XP foi concedido agora.
  */
-export function awardXp(userId: number, kind: XpKind, ref: string | number): boolean {
+export function grantXp(userId: number, kind: string, ref: string, points: number): boolean {
   const info = getDb()
     .prepare(
       `INSERT OR IGNORE INTO xp_events (user_id, kind, points, ref)
        VALUES (@userId, @kind, @points, @ref)`,
     )
-    .run({ userId, kind, points: pointsFor(kind), ref: String(ref) });
+    .run({ userId, kind, points, ref });
   return info.changes > 0;
+}
+
+/** Concede o XP padrão de uma ação de participação (um voto por projeto, etc.). */
+export function awardXp(userId: number, kind: XpKind, ref: string | number): boolean {
+  return grantXp(userId, kind, String(ref), pointsFor(kind));
 }
 
 /** Total de XP de participação acumulado pelo usuário. */

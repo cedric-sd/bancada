@@ -16,14 +16,18 @@ jest.mock('@/lib/projects', () => ({ listProjects: jest.fn() }));
 jest.mock('@/lib/weekly', () => ({ currentRace: jest.fn(), weeklyMovementMap: jest.fn(() => ({})) }));
 // NotificationsBell (no header do usuário logado) lê a contagem de não-lidas.
 jest.mock('@/lib/notifications', () => ({ unreadCount: jest.fn(() => 3) }));
+// Missões da semana (só logado).
+jest.mock('@/lib/missions', () => ({ getWeeklyMissions: jest.fn(() => []) }));
 
 import { getCurrentUser } from '@/lib/auth';
 import { listProjects } from '@/lib/projects';
 import { currentRace, type WeeklyRace } from '@/lib/weekly';
+import { getWeeklyMissions } from '@/lib/missions';
 
 const mockedGetUser = getCurrentUser as jest.MockedFunction<typeof getCurrentUser>;
 const mockedList = listProjects as jest.MockedFunction<typeof listProjects>;
 const mockedRace = currentRace as jest.MockedFunction<typeof currentRace>;
+const mockedMissions = getWeeklyMissions as jest.MockedFunction<typeof getWeeklyMissions>;
 
 const leaderEntry = {
   rank: 1,
@@ -165,6 +169,9 @@ describe('Home (placar)', () => {
   it('passa o userId do usuário logado para listProjects e mostra a conta', async () => {
     mockedGetUser.mockResolvedValue(me);
     mockedList.mockReturnValue(sample);
+    mockedMissions.mockReturnValue([
+      { id: 'vote3', label: 'Vote em 3 projetos', kind: 'vote', progress: 1, target: 3, reward: 15, done: false },
+    ]);
 
     await renderHome();
 
@@ -174,6 +181,9 @@ describe('Home (placar)', () => {
     expect(screen.queryByRole('link', { name: 'Entrar' })).not.toBeInTheDocument();
     // sino de notificações com selo de não-lidas
     expect(screen.getByRole('link', { name: /Notificações \(3 não lidas\)/ })).toBeInTheDocument();
+    // missões da semana aparecem para quem está logado
+    expect(screen.getByText('MISSÕES DA SEMANA')).toBeInTheDocument();
+    expect(screen.getByText('Vote em 3 projetos')).toBeInTheDocument();
   });
 
   it('resolve a ordenação a partir de ?ordem=', async () => {

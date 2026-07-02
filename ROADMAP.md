@@ -70,7 +70,7 @@ Fecha o loop: o usuário precisa *sentir* o efeito das ações.
   `prefers-reduced-motion`. A celebração de *level-up* fica para a Fase 4
   (níveis/perks), onde a mudança de nível é o gatilho natural.
 
-### Fase 3 — Recompensar participação · retenção e onboarding
+### Fase 3 — Recompensar participação · retenção e onboarding · ✓ feito
 
 Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
 
@@ -81,8 +81,9 @@ Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
 - ✓ **Streaks:** dias consecutivos ativo, derivados da presença diária (mesmos
   `xp_events`, kind `daily`). Selo 🔥 no perfil; quebra ao passar um dia sem
   visitar. A presença é registrada no `getCurrentUser` (uma escrita por dia).
-- **Missões da semana:** ex. "avalie 3 projetos", "publique 1" → recompensa em XP.
-  Ensinam o loop e direcionam comportamento.
+- ✓ **Missões da semana:** "vote em 3 projetos", "avalie 2", "publique 1" →
+  recompensa em XP ao concluir (uma vez por semana, anti-farm). Progresso vindo
+  das ações reais da semana (`xp_events`), painel no placar para quem está logado.
 
 ### Fase 4 — Profundidade de status · médio impacto
 

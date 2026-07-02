@@ -5,8 +5,10 @@ import PodiumCard from '@/components/PodiumCard';
 import RankRow from '@/components/RankRow';
 import PlacarControls from '@/components/PlacarControls';
 import WeeklyBanner from '@/components/WeeklyBanner';
+import WeeklyMissions from '@/components/WeeklyMissions';
 import { listProjects, type SortKey } from '@/lib/projects';
 import { currentRace, weeklyMovementMap } from '@/lib/weekly';
+import { getWeeklyMissions } from '@/lib/missions';
 import { getCurrentUser } from '@/lib/auth';
 import { categories } from '@/lib/data';
 
@@ -29,6 +31,7 @@ export default async function Home({
   const all = listProjects(user?.id, { sort, cat: category, q: query });
   const race = currentRace();
   const moves = weeklyMovementMap();
+  const missions = user ? getWeeklyMissions(user.id) : [];
 
   // Pódio só na visão padrão (sem busca nem filtro de categoria).
   const filtering = !!query || (!!category && category !== 'Todos');
@@ -56,6 +59,9 @@ export default async function Home({
 
       {/* ciclo semanal: líder atual + atalho para o Hall da Fama */}
       <WeeklyBanner race={race} />
+
+      {/* missões da semana (só logado) */}
+      {authed ? <WeeklyMissions missions={missions} /> : null}
 
       {/* controles: ordenação, busca e categorias */}
       <div style={{ marginBottom: 22 }}>
