@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Board from '@/components/Board';
 import Logo from '@/components/Logo';
 import UserMenu from '@/components/UserMenu';
@@ -64,8 +65,13 @@ export default async function Home({
       {authed ? <WeeklyMissions missions={missions} /> : null}
 
       {/* controles: ordenação, busca e categorias */}
-      <div style={{ marginBottom: 22 }}>
+      <div style={{ marginBottom: 10 }}>
         <PlacarControls categories={categories} />
+      </div>
+      <div style={{ textAlign: 'right', marginBottom: 18 }}>
+        <Link href="/categorias" style={{ font: '600 10px var(--font-mono)', color: 'rgba(40,30,10,.6)' }}>
+          rankings por categoria →
+        </Link>
       </div>
 
       {/* podium (visão padrão) */}

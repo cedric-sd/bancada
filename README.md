@@ -25,6 +25,7 @@ Próximos passos de gamificação estão em [`ROADMAP.md`](ROADMAP.md).
 | `/meus-projetos` | **Meus projetos** | Gerenciar (ver/editar/excluir) os projetos que você publicou. |
 | `/hall-da-fama` | **Hall da Fama** | Disputa da semana atual (top 3 + quanto falta) e os vencedores de semanas passadas. |
 | `/notificacoes` | **Notificações** | Feed de eventos dos seus projetos (votos e avaliações recebidos), com selo de não-lidas no header. |
+| `/categorias` | **Rankings por categoria** | O "MELHOR EM {categoria}" (campeão + vice-campeões) de cada categoria. |
 
 A tela principal é a **1b** (placar de ranking); as telas internas seguem a
 direção visual da 1b, conforme o protótipo de referência.
@@ -78,6 +79,8 @@ direção visual da 1b, conforme o protótipo de referência.
   `alta` (mais votos nos últimos 7 dias) — via `?ordem=`.
 - **Busca** (`?q=` em nome/resumo/autor) e **filtro por categoria** (`?cat=`);
   a **média de estrelas** aparece nos cards do placar.
+- **Rankings por categoria** (`/categorias`): o **"MELHOR EM {categoria}"** de cada
+  categoria (campeão + vice-campeões), com atalho a partir do placar.
 - **Screenshot** do projeto e **avatar** do usuário guardados no banco e
   **otimizados no upload** com `sharp` (redimensiona e reencoda em WebP).
 - API CRUD sob `/api/projects` (+ `/vote`, `/image`, `/reviews`),
