@@ -29,6 +29,15 @@ describe('describeNotification', () => {
     expect(v.href).toBe('/project/lumen');
   });
 
+  it('follow: ícone ➕, texto e link para o perfil de quem seguiu', () => {
+    const v = describeNotification(
+      make({ kind: 'follow', projectSlug: null, projectName: null, meta: { handle: 'theosalles' } }),
+    );
+    expect(v.icon).toBe('➕');
+    expect(v.title).toBe('Théo Salles começou a seguir você');
+    expect(v.href).toBe('/dev/theosalles');
+  });
+
   it('cai em textos genéricos quando faltam autor/projeto', () => {
     const v = describeNotification(make({ actor: null, projectName: null, projectSlug: null }));
     expect(v.title).toBe('Alguém votou em seu projeto');

@@ -49,6 +49,9 @@ export type Dev = {
   badge: string;
   participation: number; // XP acumulado por votar/avaliar/publicar/presença
   streak: number; // dias consecutivos ativo
+  userId: number | null; // id da conta (null p/ autores sem cadastro)
+  followers: number;
+  following: number;
   stats: { projects: number; votes: string; bestRank: string };
   achievements: AchievementView[]; // conquistadas
   upcoming: AchievementView[]; // próximas (com progresso)

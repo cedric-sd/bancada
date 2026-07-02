@@ -107,9 +107,11 @@ Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
 - **Anti-abuso:** impedir auto-voto/auto-review (já bloqueado p/ review do próprio
   projeto), detectar padrões de conluio.
 - ✓ **Rankings por categoria** ("melhor em Design"): página `/categorias` com o
-  campeão + vice-campeões de cada categoria (`categoryRankings`). Falta **seguir
-  devs** → rivalidade saudável e leaderboards de nicho.
-- **Comparar com amigos / rivais.**
+  campeão + vice-campeões de cada categoria (`categoryRankings`).
+- ✓ **Seguir devs**: seguir/deixar de seguir pelo perfil (`follows`), contadores de
+  seguidores/seguindo e notificação de novo seguidor (kind `follow`). Sem auto-seguir.
+- **Comparar com amigos / rivais** e **feed de quem você segue** (evolução natural
+  agora que há `follows`).
 
 ## Sequência recomendada
 

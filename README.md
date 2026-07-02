@@ -61,9 +61,10 @@ direção visual da 1b, conforme o protótipo de referência.
   visível ao nível — título/selo, **moldura do avatar** e disco de nível coloridos
   por faixa no perfil, e **chip de nível destacado** por faixa no card do placar.
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
-- **Notificações**: quando alguém vota ou avalia um projeto seu, o dono recebe
-  um aviso (feed em `/notificacoes` + selo de não-lidas no sino do header). Só a
-  primeira avaliação de cada pessoa gera aviso; editar uma avaliação não repete.
+- **Notificações**: quando alguém vota ou avalia um projeto seu, ou começa a te
+  seguir, você recebe um aviso (feed em `/notificacoes` + selo de não-lidas no
+  sino do header). Só a primeira avaliação de cada pessoa gera aviso; editar uma
+  avaliação não repete.
 - **Ciclo semanal**: o placar da semana conta os votos da semana corrente
   (segunda 00:00 UTC → segunda seguinte). Ao virar a semana, o 1º lugar é coroado
   e arquivado no **Hall da Fama** — sem agendador: as semanas concluídas são
@@ -81,6 +82,9 @@ direção visual da 1b, conforme o protótipo de referência.
   a **média de estrelas** aparece nos cards do placar.
 - **Rankings por categoria** (`/categorias`): o **"MELHOR EM {categoria}"** de cada
   categoria (campeão + vice-campeões), com atalho a partir do placar.
+- **Seguir devs**: seguir/deixar de seguir pelo perfil, com contadores de
+  seguidores/seguindo e **notificação de novo seguidor**. Não é possível seguir a
+  si mesmo.
 - **Screenshot** do projeto e **avatar** do usuário guardados no banco e
   **otimizados no upload** com `sharp` (redimensiona e reencoda em WebP).
 - API CRUD sob `/api/projects` (+ `/vote`, `/image`, `/reviews`),

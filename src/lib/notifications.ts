@@ -1,6 +1,6 @@
 import { getDb } from './db';
 
-export type NotificationKind = 'vote' | 'review';
+export type NotificationKind = 'vote' | 'review' | 'follow';
 
 type Row = {
   id: number;
@@ -67,6 +67,16 @@ export function describeNotification(n: Notification): NotificationView {
       icon: '★',
       title: `${who} avaliou ${proj} — ${label}${stars}/5`,
       href,
+    };
+  }
+
+  if (n.kind === 'follow') {
+    const handle = typeof n.meta.handle === 'string' ? n.meta.handle : null;
+    return {
+      ...n,
+      icon: '➕',
+      title: `${who} começou a seguir você`,
+      href: handle ? `/dev/${handle}` : null,
     };
   }
 

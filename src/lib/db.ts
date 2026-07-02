@@ -138,6 +138,15 @@ function init(): Database.Database {
       created_at     TEXT    NOT NULL DEFAULT (datetime('now')),
       PRIMARY KEY (user_id, achievement_id)
     );
+
+    -- Seguir devs: follower_id segue following_id.
+    CREATE TABLE IF NOT EXISTS follows (
+      follower_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      following_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at   TEXT    NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (follower_id, following_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_follows_following ON follows(following_id);
   `);
 
   // Migrações para bancos criados antes destas colunas.
