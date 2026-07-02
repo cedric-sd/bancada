@@ -1,13 +1,15 @@
 import { getDb } from './db';
 
-// Ações de participação que rendem XP. Recompensar votar/avaliar/publicar (não
-// só *receber* votos) mantém a bancada acolhedora para quem está começando.
-export type XpKind = 'vote' | 'review' | 'publish';
+// Ações de participação que rendem XP. Recompensar votar/avaliar/publicar e a
+// presença diária (não só *receber* votos) mantém a bancada acolhedora para
+// quem está começando e cria motivo para voltar.
+export type XpKind = 'vote' | 'review' | 'publish' | 'daily';
 
 export const XP_POINTS: Record<XpKind, number> = {
   vote: 2,
   review: 5,
   publish: 25,
+  daily: 3,
 };
 
 export function pointsFor(kind: XpKind): number {

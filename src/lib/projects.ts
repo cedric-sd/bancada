@@ -2,6 +2,7 @@ import { getDb } from './db';
 import { type Achievement, type Dev, type Project } from './data';
 import { notifyProjectEvent } from './notifications';
 import { awardXp, participationXp } from './xp';
+import { currentStreak } from './streak';
 
 type Row = {
   id: number;
@@ -399,6 +400,7 @@ export function resolveDev(rawHandle: string): Dev | undefined {
   // XP recompensa votos recebidos, projetos publicados (100 XP por projeto) e a
   // participação na plataforma (votar, avaliar, publicar — ver src/lib/xp.ts).
   const participation = account ? participationXp(account.id) : 0;
+  const streak = account ? currentStreak(account.id) : 0;
   const xp = votes + projectCount * 100 + participation;
   const level = levelForXp(xp);
 
@@ -421,6 +423,7 @@ export function resolveDev(rawHandle: string): Dev | undefined {
     xpNext: xpThreshold(level + 1),
     badge: rankBadge(level),
     participation,
+    streak,
     stats: {
       projects: projectCount,
       votes: votes.toLocaleString('pt-BR'),
