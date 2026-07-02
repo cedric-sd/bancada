@@ -112,7 +112,10 @@ Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
   seguidores/seguindo e notificação de novo seguidor (kind `follow`). Sem auto-seguir.
 - ✓ **Feed de quem você segue**: página `/seguindo` com os projetos dos devs
   seguidos, mais recentes primeiro (`listFollowingFeed`).
-- **Comparar com amigos / rivais** (leaderboard entre quem você segue).
+- ✓ **Comparar com rivais**: placar em `/seguindo` com você e quem você segue,
+  ranqueados por votos recebidos (`rivalLeaderboard`), com a sua linha destacada.
+- **Orçamento/peso de voto** e **anti-abuso** (conluio): ficam para quando houver
+  volume real de usuários — é onde essas mecânicas passam a fazer diferença.
 
 ## Sequência recomendada
 
