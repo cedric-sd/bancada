@@ -1,5 +1,7 @@
 # Bancada
 
+![Bancada — vitrine gamificada de side projects](docs/banner.png)
+
 **Bancada** é uma vitrine gamificada de side projects: um placar semanal com
 pódio, votos e XP para a comunidade de builders. A interface segue uma metáfora
 física de "bancada de trabalho" — madeira texturizada, papel, carimbos
