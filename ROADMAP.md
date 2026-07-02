@@ -53,7 +53,7 @@ Torna o "PLACAR DA SEMANA" verdadeiro e cria motivo para voltar toda semana.
 - **Fica para depois:** toggle "semana / geral" no placar principal (hoje o
   destaque semanal vive na faixa + Hall da Fama, e o placar segue all-time).
 
-### Fase 2 — Feedback e movimento · alto impacto, médio esforço
+### Fase 2 — Feedback e movimento · alto impacto, médio esforço · ✓ feito
 
 Fecha o loop: o usuário precisa *sentir* o efeito das ações.
 
@@ -65,8 +65,10 @@ Fecha o loop: o usuário precisa *sentir* o efeito das ações.
   placar **semanal** (o all-time não tem histórico por data). Falta ainda a
   *notificação* de posição ("subiu para #3") — agora que há a variação, é o
   próximo passo natural.
-- **Juice:** confete ao bater marcos, celebração de level-up, animação no voto.
-  A estética de "bancada física" combina com micro-interações satisfatórias.
+- ✓ **Juice:** animação satisfatória no voto (pop do ▲ + faíscas) e **confete ao
+  bater marcos** de votos (10, 100, 1000…), sem dependências e respeitando
+  `prefers-reduced-motion`. A celebração de *level-up* fica para a Fase 4
+  (níveis/perks), onde a mudança de nível é o gatilho natural.
 
 ### Fase 3 — Recompensar participação · retenção e onboarding
 

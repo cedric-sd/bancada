@@ -61,3 +61,22 @@ a {
   transform: translateY(-2px);
   filter: brightness(1.02);
 }
+
+/* "Pop" satisfatório do ▲ ao registrar um voto. */
+@keyframes vote-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.55); }
+  70% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.vote-pop {
+  display: inline-block;
+  animation: vote-pop 0.42s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vote-pop {
+    animation: none;
+  }
+}

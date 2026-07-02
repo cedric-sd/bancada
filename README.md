@@ -51,6 +51,9 @@ direção visual da 1b, conforme o protótipo de referência.
 - **Variação de posição** (`▲/▼`): cada projeto mostra como se moveu na disputa
   desta semana vs. a semana passada (`▲2` subiu, `▼1` caiu, `novo` entrou), no
   placar (pódio e lista) e no Hall da Fama.
+- **Juice**: micro-interações satisfatórias e sem dependências — o ▲ do voto dá
+  um "pop", faíscas saem do botão e há **confete** quando o voto cruza um marco
+  de votos (10, 100, 1000…). Respeita `prefers-reduced-motion`.
 - **Ordenação do placar** em abas: `top` (mais votados), `novos` (recentes) e
   `alta` (mais votos nos últimos 7 dias) — via `?ordem=`.
 - **Busca** (`?q=` em nome/resumo/autor) e **filtro por categoria** (`?cat=`);
