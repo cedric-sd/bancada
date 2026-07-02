@@ -43,6 +43,7 @@ function init(): Database.Database {
       name          TEXT    NOT NULL,
       password_hash TEXT    NOT NULL,
       bio           TEXT    NOT NULL DEFAULT '',
+      github_id     INTEGER,
       created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -92,6 +93,11 @@ function init(): Database.Database {
   // Migrações para bancos criados antes destas colunas.
   ensureColumn(db, 'projects', 'owner_id', 'INTEGER');
   ensureColumn(db, 'users', 'bio', "TEXT NOT NULL DEFAULT ''");
+  ensureColumn(db, 'users', 'github_id', 'INTEGER');
+  // Índice único parcial: um github_id por conta (permite vários NULL).
+  db.exec(
+    'CREATE UNIQUE INDEX IF NOT EXISTS idx_users_github_id ON users(github_id) WHERE github_id IS NOT NULL',
+  );
 
   seedIfEmpty(db);
   return db;

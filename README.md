@@ -28,7 +28,7 @@ direção visual da 1b, conforme o protótipo de referência.
 - Dados em **SQLite** (`better-sqlite3`), arquivo local em `data/bancada.db`,
   semeado a partir do seed na primeira execução.
 - **Autenticação própria**: cadastro/login com senha (hash `scrypt` nativo) e
-  sessão por cookie `httpOnly` — sem serviços externos.
+  sessão por cookie `httpOnly`. Opcionalmente, **login com GitHub** (OAuth).
 - **Publicar** exige login; o autor vem da conta. **Editar/excluir** só o dono.
 - **Voto persistente e por usuário**: no máximo um voto por projeto por conta.
 - **Reviews reais**: avaliações (1–5 estrelas + texto) da comunidade, uma por
@@ -58,6 +58,22 @@ npm run build   # build de produção
 npm run start   # serve o build de produção
 npm run lint    # ESLint
 ```
+
+### Login com GitHub (opcional)
+
+O botão "Entrar com GitHub" só aparece se as variáveis abaixo estiverem
+definidas (ex.: em `.env.local`):
+
+```bash
+GITHUB_CLIENT_ID=seu_client_id
+GITHUB_CLIENT_SECRET=seu_client_secret
+# opcional; por padrão usa <origin>/api/auth/github/callback
+GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/github/callback
+```
+
+Crie um **OAuth App** em GitHub → Settings → Developer settings, com o
+"Authorization callback URL" igual ao `GITHUB_REDIRECT_URI`. No primeiro login,
+a conta é criada com o handle do GitHub e o avatar é importado.
 
 ## Estrutura
 

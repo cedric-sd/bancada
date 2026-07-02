@@ -93,7 +93,7 @@ export default function VoteButton({
           ...lightFace,
           boxShadow: '0 2px 0 #b1925e,inset 0 1px 0 rgba(255,255,255,.7)',
           font: '800 11px var(--font-mono)',
-          ...(isVoted ? { boxShadow: '0 2px 0 #b1925e,inset 0 1px 0 rgba(255,255,255,.7),0 0 0 2px #b23a2a inset' } : null),
+          ...(isVoted ? { boxShadow: '0 2px 0 #b1925e,inset 0 1px 0 rgba(255,255,255,.7),0 0 0 2px #4f8a3a inset' } : null),
         }}
       >
         ▲ {display}
@@ -122,12 +122,12 @@ export default function VoteButton({
         borderRadius: dims.radius,
         ...lightFace,
         boxShadow: isVoted
-          ? '0 4px 0 #b1925e,0 6px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.7),0 0 0 2px #b23a2a inset'
+          ? '0 4px 0 #b1925e,0 6px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.7),0 0 0 2px #4f8a3a inset'
           : '0 4px 0 #b1925e,0 6px 10px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.7)',
         flex: 'none',
       }}
     >
-      <span style={{ fontSize: dims.arrow, lineHeight: 1, color: isVoted ? '#b23a2a' : undefined }}>▲</span>
+      <span style={{ fontSize: dims.arrow, lineHeight: 1, color: isVoted ? '#4f8a3a' : undefined }}>▲</span>
       <span style={{ font: `800 ${dims.num}px var(--font-mono)` }}>{display}</span>
       {variant === 'detail' ? (
         <span style={{ font: '500 8px var(--font-mono)', color: 'rgba(40,30,10,.55)', marginTop: 1 }}>
