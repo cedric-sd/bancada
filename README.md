@@ -18,7 +18,7 @@ Próximos passos de gamificação estão em [`ROADMAP.md`](ROADMAP.md).
 | --- | --- | --- |
 | `/` | **Placar (1b)** | Tela principal: abas **Top / Novos / Em alta**, **busca** e **filtro por categoria**, pódio (top 3), lista ranqueada (com média de estrelas), conta e ação de publicar. |
 | `/project/[slug]` | **Detalhe (1d)** | Hero, estatísticas, ações físicas (votar/abrir), descrição, tags e reviews da comunidade. |
-| `/dev/[handle]` | **Perfil (1e)** | Nível, barra de XP, conquistas e projetos publicados do dev. |
+| `/dev/[handle]` | **Perfil (1e)** | Nível, barra de XP, streak, conquistas (conquistadas + próximas com progresso) e projetos publicados do dev. |
 | `/entrar`, `/cadastrar` | **Conta** | Login e cadastro (handle + senha). |
 | `/publicar`, `/project/[slug]/editar` | **Formulários** | Publicar (requer login) e editar (só o dono). |
 | `/perfil/editar` | **Perfil** | Editar o próprio nome, bio e avatar. |
@@ -50,6 +50,10 @@ direção visual da 1b, conforme o protótipo de referência.
   "publique 1") com barra de progresso, recompensadas em XP ao concluir (uma vez
   por semana). Aparecem no placar para quem está logado; o progresso vem das
   ações reais da semana.
+- **Conquistas com progresso**: além das conquistadas (carimbos), o perfil mostra
+  as **próximas** com barra de progresso ("faltam N votos para +1000"). Inclui as
+  de participação — **Curador** (votar em 10), **Crítico** (avaliar 5) e
+  **Comentado** (receber 5 avaliações).
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
 - **Notificações**: quando alguém vota ou avalia um projeto seu, o dono recebe
   um aviso (feed em `/notificacoes` + selo de não-lidas no sino do header). Só a

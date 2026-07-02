@@ -87,10 +87,14 @@ Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
 
 ### Fase 4 — Profundidade de status · médio impacto
 
-- **Conquistas com progresso visível:** "faltam 120 votos para +1000".
-- **Novas conquistas:** *Curador* (votou em N), *Crítico* (deu N reviews),
-  *Comentado* (recebeu N reviews), *Estreante da semana*, *Manteve o #1 por N semanas*.
-- **Momento de desbloqueio:** toast/celebração ao ganhar uma conquista.
+- ✓ **Conquistas com progresso visível:** "faltam N votos para +1000". O perfil
+  separa conquistadas (carimbos) de próximas (barras). Corrigido também o "TOP 3"
+  indevido em perfis sem projetos (`bestRank >= 1`).
+- ✓ **Novas conquistas:** *Curador* (votar em 10), *Crítico* (avaliar 5),
+  *Comentado* (receber 5 avaliações). Faltam *Estreante da semana* e *Manteve o #1
+  por N semanas* (dependem de histórico semanal por dev).
+- **Momento de desbloqueio:** toast/celebração ao ganhar uma conquista (reaproveita
+  o `confettiBurst` do juice).
 - **Níveis que valem algo:** título + moldura de perfil, selo destacado no card —
   nem que seja cosmético (progressão cosmética funciona).
 
