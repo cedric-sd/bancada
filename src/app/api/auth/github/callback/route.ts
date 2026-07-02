@@ -10,6 +10,7 @@ import {
   getUserByGithubId,
   setUserAvatar,
 } from '@/lib/auth';
+import { resolveOrigin } from '@/lib/http';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,9 +23,15 @@ function fail(origin: string, reason: string) {
 // GET /api/auth/github/callback — conclui o login com GitHub.
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const origin = url.origin;
+  const origin = resolveOrigin(request);
 
   if (!githubConfigured()) return fail(origin, 'GitHub não configurado.');
+
+  // O GitHub pode retornar um erro (ex.: usuário negou acesso).
+  const ghError = url.searchParams.get('error');
+  if (ghError) {
+    return fail(origin, url.searchParams.get('error_description') || `GitHub: ${ghError}`);
+  }
 
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
@@ -33,25 +40,33 @@ export async function GET(request: Request) {
   const savedState = store.get('gh_state')?.value;
   const next = store.get('gh_next')?.value || '/';
 
-  if (!code || !state || !savedState || state !== savedState) {
-    return fail(origin, 'Falha na verificação do login.');
+  if (!code) return fail(origin, 'Código de autorização ausente.');
+  if (!state || !savedState || state !== savedState) {
+    return fail(origin, 'Falha na verificação de segurança (state). Tente novamente.');
   }
 
   try {
-    // 1) troca o code por access_token
+    // 1) troca o code por access_token (form-urlencoded, o formato mais compatível)
     const redirectUri = process.env.GITHUB_REDIRECT_URI || `${origin}/api/auth/github/callback`;
     const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        client_id: process.env.GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+      body: new URLSearchParams({
+        client_id: process.env.GITHUB_CLIENT_ID!,
+        client_secret: process.env.GITHUB_CLIENT_SECRET!,
         code,
         redirect_uri: redirectUri,
       }),
     });
-    const tokenData = (await tokenRes.json()) as { access_token?: string };
-    if (!tokenData.access_token) return fail(origin, 'Não foi possível autenticar com o GitHub.');
+    const tokenData = (await tokenRes.json()) as {
+      access_token?: string;
+      error?: string;
+      error_description?: string;
+    };
+    if (!tokenData.access_token) {
+      // Surfaces the real reason (ex.: redirect_uri_mismatch, bad_verification_code).
+      return fail(origin, tokenData.error_description || tokenData.error || 'Falha ao obter o token do GitHub.');
+    }
 
     // 2) busca o perfil
     const userRes = await fetch('https://api.github.com/user', {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { randomBytes } from 'node:crypto';
 import { githubConfigured } from '@/lib/auth';
+import { resolveOrigin } from '@/lib/http';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -12,8 +13,9 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
+  const origin = resolveOrigin(request);
   const next = url.searchParams.get('next');
-  const redirectUri = process.env.GITHUB_REDIRECT_URI || `${url.origin}/api/auth/github/callback`;
+  const redirectUri = process.env.GITHUB_REDIRECT_URI || `${origin}/api/auth/github/callback`;
   const state = randomBytes(16).toString('hex');
 
   const authorize = new URL('https://github.com/login/oauth/authorize');
