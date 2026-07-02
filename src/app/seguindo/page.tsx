@@ -3,8 +3,10 @@ import { redirect } from 'next/navigation';
 import Board from '@/components/Board';
 import VoteButton from '@/components/VoteButton';
 import Rating from '@/components/Rating';
+import Avatar from '@/components/Avatar';
 import { listFollowingFeed } from '@/lib/projects';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser, initialsOf } from '@/lib/auth';
+import { rivalLeaderboard } from '@/lib/rivals';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +15,7 @@ export default async function SeguindoPage() {
   if (!user) redirect('/entrar?next=/seguindo');
 
   const feed = listFollowingFeed(user.id);
+  const rivals = rivalLeaderboard(user.id);
 
   return (
     <Board maxWidth={720}>
@@ -35,6 +38,58 @@ export default async function SeguindoPage() {
       <div style={{ font: '500 10px/1 var(--font-mono)', letterSpacing: '.14em', color: 'rgba(40,30,10,.6)', marginBottom: 20 }}>
         PROJETOS DOS DEVS QUE VOCÊ SEGUE
       </div>
+
+      {/* rivalidade: você vs. quem você segue */}
+      {rivals.length > 0 ? (
+        <div
+          style={{
+            background: '#f7efda',
+            border: '1px solid #d8c79d',
+            borderRadius: 10,
+            boxShadow: '0 2px 0 rgba(0,0,0,.07),0 6px 14px rgba(0,0,0,.14)',
+            padding: '14px 16px',
+            marginBottom: 22,
+          }}
+        >
+          <div style={{ font: '700 11px var(--font-mono)', letterSpacing: '.14em', color: 'rgba(40,30,10,.6)', marginBottom: 12 }}>
+            VOCÊ E SEUS RIVAIS · POR VOTOS RECEBIDOS
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            {rivals.map((r) => (
+              <div
+                key={r.userId}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '8px 11px',
+                  background: r.isSelf ? '#fbf3dd' : '#efe6cd',
+                  border: `1px solid ${r.isSelf ? '#e0c98f' : '#cbb787'}`,
+                  borderRadius: 8,
+                }}
+              >
+                <span style={{ font: '900 16px var(--font-archivo)', color: '#9a8050', width: 22, textAlign: 'center', flex: 'none' }}>
+                  {r.rank}
+                </span>
+                <Avatar
+                  initials={initialsOf(r.name)}
+                  size={26}
+                  src={r.hasAvatar ? `/api/users/${r.handle}/avatar` : undefined}
+                />
+                <Link href={`/dev/${r.handle}`} style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 7 }}>
+                  <span style={{ font: '800 13px var(--font-archivo)', color: '#221c12' }}>{r.name}</span>
+                  {r.isSelf ? (
+                    <span style={{ font: '700 8px var(--font-mono)', letterSpacing: '.1em', color: '#b23a2a' }}>VOCÊ</span>
+                  ) : null}
+                </Link>
+                <span style={{ font: '800 12px var(--font-mono)', color: '#b23a2a', flex: 'none' }}>
+                  ▲ {r.votes.toLocaleString('pt-BR')}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {feed.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
