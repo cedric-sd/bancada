@@ -7,6 +7,9 @@ import { getCurrentUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
+// Rotações dos carimbos de conquista (visual "editorial").
+const STAMP_ROT = [-4, 3, -2, 2.5, -3, 2];
+
 const statCell = (value: string, label: string, color = '#221c12') => (
   <div
     style={{
@@ -216,16 +219,67 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
         </div>
       </div>
 
-      {/* achievements */}
+      {/* achievements — conquistadas */}
       {dev.achievements.length > 0 ? (
         <div style={{ marginTop: 20 }}>
           <div style={{ font: '700 11px var(--font-mono)', letterSpacing: '.14em', color: 'rgba(40,30,10,.6)', marginBottom: 13 }}>
             CONQUISTAS
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 13 }}>
-            {dev.achievements.map((a) => (
-              <Stamp key={a.label} label={a.label} color={a.color} rotate={a.rotate} size="lg" />
+            {dev.achievements.map((a, i) => (
+              <Stamp key={a.id} label={a.label} color={a.color} rotate={STAMP_ROT[i % STAMP_ROT.length]} size="lg" />
             ))}
+          </div>
+        </div>
+      ) : null}
+
+      {/* achievements — próximas (com progresso) */}
+      {dev.upcoming.length > 0 ? (
+        <div style={{ marginTop: 22 }}>
+          <div style={{ font: '700 11px var(--font-mono)', letterSpacing: '.14em', color: 'rgba(40,30,10,.6)', marginBottom: 13 }}>
+            PRÓXIMAS CONQUISTAS
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 12 }}>
+            {dev.upcoming.map((a) => {
+              const pct = Math.round((a.current / a.target) * 100);
+              const remaining = (a.target - a.current).toLocaleString('pt-BR');
+              return (
+                <div
+                  key={a.id}
+                  style={{
+                    background: '#f6eed8',
+                    border: '1px solid #d8c79d',
+                    borderRadius: 9,
+                    padding: '12px 14px',
+                    boxShadow: '0 2px 0 rgba(0,0,0,.06)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                    <span style={{ font: '800 12px var(--font-archivo)', letterSpacing: '.04em', color: a.color }}>
+                      {a.label}
+                    </span>
+                    <span style={{ font: '600 10px var(--font-mono)', color: 'rgba(40,30,10,.55)' }}>
+                      {a.current.toLocaleString('pt-BR')}/{a.target.toLocaleString('pt-BR')}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      height: 8,
+                      borderRadius: 5,
+                      background: '#d6c396',
+                      border: '1px solid #b39e6c',
+                      overflow: 'hidden',
+                      margin: '9px 0 6px',
+                    }}
+                  >
+                    <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(#d9b45c,#b98f2e)' }} />
+                  </div>
+                  <div style={{ font: '500 9.5px var(--font-mono)', color: 'rgba(40,30,10,.55)' }}>
+                    faltam {remaining} {a.unit}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       ) : null}

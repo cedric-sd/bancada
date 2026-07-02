@@ -29,6 +29,8 @@ export type Project = {
 };
 
 
+import type { AchievementView } from './achievements';
+
 export type Achievement = {
   label: string;
   color: string;
@@ -48,7 +50,8 @@ export type Dev = {
   participation: number; // XP acumulado por votar/avaliar/publicar/presença
   streak: number; // dias consecutivos ativo
   stats: { projects: number; votes: string; bestRank: string };
-  achievements: Achievement[];
+  achievements: AchievementView[]; // conquistadas
+  upcoming: AchievementView[]; // próximas (com progresso)
   projectSlugs: string[];
 };
 

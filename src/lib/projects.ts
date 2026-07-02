@@ -1,8 +1,9 @@
 import { getDb } from './db';
-import { type Achievement, type Dev, type Project } from './data';
+import { type Dev, type Project } from './data';
 import { notifyProjectEvent } from './notifications';
 import { awardXp, participationXp } from './xp';
 import { currentStreak } from './streak';
+import { buildAchievements, earnedAchievements, upcomingAchievements, type Metrics } from './achievements';
 
 type Row = {
   id: number;
@@ -352,23 +353,17 @@ function rankBadge(level: number): string {
   return 'BUILDER';
 }
 
-// Conquistas derivadas de métricas reais (votos recebidos, projetos, melhor rank).
-function buildAchievements(votes: number, projectCount: number, bestRank: number): Achievement[] {
-  const out: Achievement[] = [];
-  const rot = [-4, 3, -2, 2.5, -3, 2];
-  const add = (label: string, color: string) =>
-    out.push({ label, color, rotate: rot[out.length % rot.length] });
-
-  if (bestRank === 1) add('TOP DA SEMANA', '#b23a2a');
-  else if (bestRank <= 3) add('TOP 3', '#2f6d86');
-
-  if (votes >= 1000) add('+1000 VOTOS', '#557a38');
-  else if (votes >= 100) add('+100 VOTOS', '#557a38');
-
-  if (projectCount >= 3) add('MARATONISTA', '#2f6d86');
-  if (projectCount >= 1) add('PRIMEIRO PROJETO', '#9a6a1f');
-
-  return out;
+// Métricas de participação do usuário (votos dados, avaliações feitas/recebidas).
+function participationMetrics(userId: number): Pick<Metrics, 'votesCast' | 'reviewsGiven' | 'reviewsReceived'> {
+  const db = getDb();
+  const votesCast = (db.prepare('SELECT COUNT(*) AS n FROM user_votes WHERE user_id = ?').get(userId) as { n: number }).n;
+  const reviewsGiven = (db.prepare('SELECT COUNT(*) AS n FROM reviews WHERE user_id = ?').get(userId) as { n: number }).n;
+  const reviewsReceived = (
+    db
+      .prepare('SELECT COUNT(*) AS n FROM reviews r JOIN projects p ON p.id = r.project_id WHERE p.owner_id = ?')
+      .get(userId) as { n: number }
+  ).n;
+  return { votesCast, reviewsGiven, reviewsReceived };
 }
 
 /**
@@ -412,6 +407,16 @@ export function resolveDev(rawHandle: string): Dev | undefined {
       : `Constrói ${cats.join(', ')} na bancada. ${projectCount} projeto${projectCount > 1 ? 's' : ''} publicado${projectCount > 1 ? 's' : ''}.`;
   const bio = account?.bio?.trim() ? account.bio.trim() : generatedBio;
 
+  const metrics: Metrics = {
+    votesReceived: votes,
+    projects: projectCount,
+    bestRank,
+    ...(account
+      ? participationMetrics(account.id)
+      : { votesCast: 0, reviewsGiven: 0, reviewsReceived: 0 }),
+  };
+  const allAchievements = buildAchievements(metrics);
+
   return {
     handle,
     name,
@@ -429,7 +434,8 @@ export function resolveDev(rawHandle: string): Dev | undefined {
       votes: votes.toLocaleString('pt-BR'),
       bestRank: projectCount > 0 ? `#${bestRank}` : '—',
     },
-    achievements: buildAchievements(votes, projectCount, bestRank),
+    achievements: earnedAchievements(allAchievements),
+    upcoming: upcomingAchievements(allAchievements),
     projectSlugs: authored.map((p) => p.slug),
   };
 }
