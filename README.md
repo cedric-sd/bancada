@@ -26,6 +26,7 @@ Próximos passos de gamificação estão em [`ROADMAP.md`](ROADMAP.md).
 | `/hall-da-fama` | **Hall da Fama** | Disputa da semana atual (top 3 + quanto falta) e os vencedores de semanas passadas. |
 | `/notificacoes` | **Notificações** | Feed de eventos dos seus projetos (votos e avaliações recebidos), com selo de não-lidas no header. |
 | `/categorias` | **Rankings por categoria** | O "MELHOR EM {categoria}" (campeão + vice-campeões) de cada categoria. |
+| `/seguindo` | **Seguindo** | Feed com os projetos dos devs que você segue (mais recentes primeiro). |
 
 A tela principal é a **1b** (placar de ranking); as telas internas seguem a
 direção visual da 1b, conforme o protótipo de referência.
@@ -84,7 +85,8 @@ direção visual da 1b, conforme o protótipo de referência.
   categoria (campeão + vice-campeões), com atalho a partir do placar.
 - **Seguir devs**: seguir/deixar de seguir pelo perfil, com contadores de
   seguidores/seguindo e **notificação de novo seguidor**. Não é possível seguir a
-  si mesmo.
+  si mesmo. O **feed `/seguindo`** reúne os projetos dos devs que você segue
+  (mais recentes primeiro).
 - **Screenshot** do projeto e **avatar** do usuário guardados no banco e
   **otimizados no upload** com `sharp` (redimensiona e reencoda em WebP).
 - API CRUD sob `/api/projects` (+ `/vote`, `/image`, `/reviews`),

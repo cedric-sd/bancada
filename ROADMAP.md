@@ -110,8 +110,9 @@ Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
   campeão + vice-campeões de cada categoria (`categoryRankings`).
 - ✓ **Seguir devs**: seguir/deixar de seguir pelo perfil (`follows`), contadores de
   seguidores/seguindo e notificação de novo seguidor (kind `follow`). Sem auto-seguir.
-- **Comparar com amigos / rivais** e **feed de quem você segue** (evolução natural
-  agora que há `follows`).
+- ✓ **Feed de quem você segue**: página `/seguindo` com os projetos dos devs
+  seguidos, mais recentes primeiro (`listFollowingFeed`).
+- **Comparar com amigos / rivais** (leaderboard entre quem você segue).
 
 ## Sequência recomendada
 

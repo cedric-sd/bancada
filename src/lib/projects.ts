@@ -5,7 +5,7 @@ import { awardXp, participationXp } from './xp';
 import { currentStreak } from './streak';
 import { buildAchievements, earnedAchievements, upcomingAchievements, type Metrics } from './achievements';
 import { tierForLevel } from './tiers';
-import { followCounts } from './follows';
+import { followCounts, followingIds } from './follows';
 
 type Row = {
   id: number;
@@ -173,6 +173,18 @@ export function getProjectBySlug(slug: string, userId?: number | null): Project 
 /** Projetos publicados por um usuário, mantendo o rank global do placar. */
 export function listProjectsByOwner(userId: number): Project[] {
   return listProjects(userId).filter((p) => p.ownerId === userId);
+}
+
+/**
+ * Feed do usuário: projetos publicados pelos devs que ele segue, mais recentes
+ * primeiro. Vazio se ele não segue ninguém.
+ */
+export function listFollowingFeed(userId: number): Project[] {
+  const ids = new Set(followingIds(userId));
+  if (ids.size === 0) return [];
+  return listProjects(userId, { sort: 'novos' }).filter(
+    (p) => p.ownerId !== null && ids.has(p.ownerId),
+  );
 }
 
 export type CategoryRanking = { cat: string; projects: Project[] };
