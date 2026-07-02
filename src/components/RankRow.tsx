@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Project } from '@/lib/data';
 import type { Move } from '@/lib/weekly';
+import { tierForLevel } from '@/lib/tiers';
 import VoteButton from './VoteButton';
 import Rating from './Rating';
 import Movement from './Movement';
@@ -17,6 +18,7 @@ export default function RankRow({
   authed: boolean;
   move?: Move;
 }) {
+  const tier = tierForLevel(project.lvl);
   return (
     <div
       style={{
@@ -111,15 +113,17 @@ export default function RankRow({
       <div style={{ textAlign: 'right', flex: 'none' }}>
         <div style={{ font: '800 13px var(--font-mono)', color: '#221c12' }}>★ {project.stars}</div>
         <div
+          title={`Faixa ${tier.title}`}
           style={{
             display: 'inline-block',
             marginTop: 5,
             font: '700 9px var(--font-mono)',
-            color: '#557a38',
-            background: '#e4ecca',
-            border: '1px solid #b8cf8f',
+            color: tier.accent,
+            background: tier.chipBg,
+            border: `1px solid ${tier.chipBorder}`,
             padding: '2px 7px',
             borderRadius: 5,
+            boxShadow: tier.glow,
           }}
         >
           LVL {project.lvl}

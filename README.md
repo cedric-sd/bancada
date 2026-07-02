@@ -56,6 +56,9 @@ direção visual da 1b, conforme o protótipo de referência.
   **Comentado** (receber 5 avaliações). Ao abrir o próprio perfil com conquistas
   **recém-desbloqueadas**, há uma **celebração** (toast + confete), uma vez por
   conquista.
+- **Perks de nível**: faixas (Builder → Bronze → Prata → Ouro) dão significado
+  visível ao nível — título/selo, **moldura do avatar** e disco de nível coloridos
+  por faixa no perfil, e **chip de nível destacado** por faixa no card do placar.
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
 - **Notificações**: quando alguém vota ou avalia um projeto seu, o dono recebe
   um aviso (feed em `/notificacoes` + selo de não-lidas no sino do header). Só a

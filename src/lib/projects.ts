@@ -4,6 +4,7 @@ import { notifyProjectEvent } from './notifications';
 import { awardXp, participationXp } from './xp';
 import { currentStreak } from './streak';
 import { buildAchievements, earnedAchievements, upcomingAchievements, type Metrics } from './achievements';
+import { tierForLevel } from './tiers';
 
 type Row = {
   id: number;
@@ -345,14 +346,6 @@ const initialsOf = (name: string) =>
     .slice(0, 2)
     .toUpperCase();
 
-// Selo ao lado do nome, por nível alcançado.
-function rankBadge(level: number): string {
-  if (level >= 10) return 'OURO DEV';
-  if (level >= 6) return 'PRATA DEV';
-  if (level >= 3) return 'BRONZE DEV';
-  return 'BUILDER';
-}
-
 // Métricas de participação do usuário (votos dados, avaliações feitas/recebidas).
 function participationMetrics(userId: number): Pick<Metrics, 'votesCast' | 'reviewsGiven' | 'reviewsReceived'> {
   const db = getDb();
@@ -426,7 +419,7 @@ export function resolveDev(rawHandle: string): Dev | undefined {
     level,
     xp,
     xpNext: xpThreshold(level + 1),
-    badge: rankBadge(level),
+    badge: tierForLevel(level).badge,
     participation,
     streak,
     stats: {

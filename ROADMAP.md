@@ -85,7 +85,7 @@ Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
   recompensa em XP ao concluir (uma vez por semana, anti-farm). Progresso vindo
   das ações reais da semana (`xp_events`), painel no placar para quem está logado.
 
-### Fase 4 — Profundidade de status · médio impacto
+### Fase 4 — Profundidade de status · médio impacto · ✓ feito
 
 - ✓ **Conquistas com progresso visível:** "faltam N votos para +1000". O perfil
   separa conquistadas (carimbos) de próximas (barras). Corrigido também o "TOP 3"
@@ -96,8 +96,9 @@ Hoje o XP vem quase só de *receber* votos, o que desanima quem começa.
 - ✓ **Momento de desbloqueio:** ao abrir o próprio perfil com conquistas
   recém-obtidas, um toast + confete celebram cada uma **uma única vez** (tabela
   `achievement_unlocks`; reaproveita o `confettiBurst` do juice).
-- **Níveis que valem algo:** título + moldura de perfil, selo destacado no card —
-  nem que seja cosmético (progressão cosmética funciona).
+- ✓ **Níveis que valem algo:** faixas (Builder → Bronze → Prata → Ouro) com título/
+  selo, moldura do avatar e disco de nível no perfil, e chip de nível destacado por
+  faixa no card do placar (`src/lib/tiers.ts`, puro).
 
 ### Fase 5 — Integridade e social · quando houver volume
 

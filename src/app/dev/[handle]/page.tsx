@@ -6,6 +6,7 @@ import UnlockCelebration from '@/components/UnlockCelebration';
 import { resolveDev, getProjectBySlug } from '@/lib/projects';
 import { getCurrentUser } from '@/lib/auth';
 import { settleUnlocks } from '@/lib/unlocks';
+import { tierForLevel } from '@/lib/tiers';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,6 +45,7 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
     .filter((a) => justUnlockedIds.includes(a.id))
     .map((a) => ({ label: a.label, color: a.color }));
 
+  const tier = tierForLevel(dev.level);
   const pct = Math.min(100, Math.round((dev.xp / dev.xpNext) * 100));
   const remaining = (dev.xpNext - dev.xp).toLocaleString('pt-BR');
   const myProjects = dev.projectSlugs.map(getProjectBySlug).filter((p) => p !== undefined);
@@ -107,32 +109,38 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
                 borderRight: '1px dashed rgba(0,0,0,.14)',
               }}
             />
-            <div
-              style={{
-                width: 96,
-                height: 96,
-                borderRadius: 2,
-                overflow: 'hidden',
-                background: 'radial-gradient(circle at 38% 32%,#d7b48a,#b07f54 70%,#7d5836)',
-                display: 'grid',
-                placeItems: 'center',
-                font: '900 32px var(--font-archivo)',
-                color: '#4a2f18',
-                boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.12)',
-              }}
-            >
-              {dev.hasAvatar ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={`/api/users/${dev.handle.replace(/^@/, '')}/avatar`}
-                  alt={dev.name}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              ) : (
-                dev.initials
-              )}
+            {/* moldura por faixa de nível */}
+            <div style={{ background: tier.frame, padding: 3, borderRadius: 4, boxShadow: tier.glow }}>
+              <div
+                style={{
+                  width: 96,
+                  height: 96,
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  background: 'radial-gradient(circle at 38% 32%,#d7b48a,#b07f54 70%,#7d5836)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  font: '900 32px var(--font-archivo)',
+                  color: '#4a2f18',
+                  boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.12)',
+                }}
+              >
+                {dev.hasAvatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={`/api/users/${dev.handle.replace(/^@/, '')}/avatar`}
+                    alt={dev.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  dev.initials
+                )}
+              </div>
             </div>
-            <div style={{ font: '500 9px var(--font-mono)', color: 'rgba(40,30,10,.5)', textAlign: 'center', marginTop: 6 }}>
+            <div style={{ font: '700 8.5px var(--font-mono)', letterSpacing: '.12em', color: tier.accent, textAlign: 'center', marginTop: 7 }}>
+              {tier.title.toUpperCase()}
+            </div>
+            <div style={{ font: '500 9px var(--font-mono)', color: 'rgba(40,30,10,.5)', textAlign: 'center', marginTop: 2 }}>
               {dev.handle}
             </div>
           </div>
@@ -142,7 +150,7 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
               <h1 style={{ margin: 0, font: '900 28px/1 var(--font-archivo)', color: '#221c12', textShadow: '0 1px 0 rgba(255,255,255,.5)' }}>
                 {dev.name}
               </h1>
-              <Stamp label={dev.badge} size="md" rotate={-4} style={{ padding: '3px 7px', borderRadius: 4 }} />
+              <Stamp label={dev.badge} color={tier.accent} size="md" rotate={-4} style={{ padding: '3px 7px', borderRadius: 4 }} />
               {dev.streak > 0 ? (
                 <span
                   title={`${dev.streak} dia${dev.streak > 1 ? 's' : ''} seguido${dev.streak > 1 ? 's' : ''} na bancada`}
@@ -167,18 +175,21 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
             {/* level + xp */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 14 }}>
               <div
+                title={`Faixa ${tier.title}`}
                 style={{
                   flex: 'none',
                   width: 52,
                   height: 52,
                   borderRadius: '50%',
-                  background: 'radial-gradient(circle at 35% 30%,#f4d98a,#d8a93a 60%,#a97f22)',
+                  background: tier.frame,
                   display: 'grid',
                   placeItems: 'center',
-                  boxShadow: '0 3px 6px rgba(0,0,0,.3),inset 0 1px 1px rgba(255,255,255,.6)',
+                  boxShadow: `0 3px 6px rgba(0,0,0,.3),inset 0 1px 1px rgba(255,255,255,.6),${tier.glow}`,
                 }}
               >
-                <span style={{ font: '900 22px var(--font-archivo)', color: '#5a4310', lineHeight: 1 }}>{dev.level}</span>
+                <span style={{ font: '900 22px var(--font-archivo)', color: tier.accent, lineHeight: 1, textShadow: '0 1px 0 rgba(255,255,255,.4)' }}>
+                  {dev.level}
+                </span>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 5 }}>
