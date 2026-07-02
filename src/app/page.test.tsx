@@ -14,6 +14,8 @@ jest.mock('next/navigation', () => ({
 jest.mock('@/lib/auth', () => ({ getCurrentUser: jest.fn() }));
 jest.mock('@/lib/projects', () => ({ listProjects: jest.fn() }));
 jest.mock('@/lib/weekly', () => ({ currentRace: jest.fn() }));
+// NotificationsBell (no header do usuário logado) lê a contagem de não-lidas.
+jest.mock('@/lib/notifications', () => ({ unreadCount: jest.fn(() => 3) }));
 
 import { getCurrentUser } from '@/lib/auth';
 import { listProjects } from '@/lib/projects';
@@ -170,6 +172,8 @@ describe('Home (placar)', () => {
     expect(screen.getByText('Zoe Dev')).toBeInTheDocument();
     expect(screen.getByText('sair')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Entrar' })).not.toBeInTheDocument();
+    // sino de notificações com selo de não-lidas
+    expect(screen.getByRole('link', { name: /Notificações \(3 não lidas\)/ })).toBeInTheDocument();
   });
 
   it('resolve a ordenação a partir de ?ordem=', async () => {

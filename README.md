@@ -24,6 +24,7 @@ Próximos passos de gamificação estão em [`ROADMAP.md`](ROADMAP.md).
 | `/perfil/editar` | **Perfil** | Editar o próprio nome, bio e avatar. |
 | `/meus-projetos` | **Meus projetos** | Gerenciar (ver/editar/excluir) os projetos que você publicou. |
 | `/hall-da-fama` | **Hall da Fama** | Disputa da semana atual (top 3 + quanto falta) e os vencedores de semanas passadas. |
+| `/notificacoes` | **Notificações** | Feed de eventos dos seus projetos (votos e avaliações recebidos), com selo de não-lidas no header. |
 
 A tela principal é a **1b** (placar de ranking); as telas internas seguem a
 direção visual da 1b, conforme o protótipo de referência.
@@ -39,6 +40,9 @@ direção visual da 1b, conforme o protótipo de referência.
 - **Reviews reais**: avaliações (1–5 estrelas + texto) da comunidade, uma por
   usuário por projeto; não é possível avaliar o próprio projeto.
 - **Perfil editável** (nome/bio/avatar); o perfil é calculado dos votos recebidos.
+- **Notificações**: quando alguém vota ou avalia um projeto seu, o dono recebe
+  um aviso (feed em `/notificacoes` + selo de não-lidas no sino do header). Só a
+  primeira avaliação de cada pessoa gera aviso; editar uma avaliação não repete.
 - **Ciclo semanal**: o placar da semana conta os votos da semana corrente
   (segunda 00:00 UTC → segunda seguinte). Ao virar a semana, o 1º lugar é coroado
   e arquivado no **Hall da Fama** — sem agendador: as semanas concluídas são

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Avatar from '@/components/Avatar';
 import DarkButton from '@/components/DarkButton';
 import LogoutButton from '@/components/LogoutButton';
+import NotificationsBell from '@/components/NotificationsBell';
 import type { User } from '@/lib/auth';
 
 /**
@@ -35,6 +36,7 @@ export default function UserMenu({ user }: { user: User | null }) {
   const handleSlug = user.handle.replace(/^@/, '');
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+      <NotificationsBell userId={user.id} />
       <div
         style={{
           display: 'inline-flex',

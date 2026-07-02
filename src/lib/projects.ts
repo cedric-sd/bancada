@@ -1,5 +1,6 @@
 import { getDb } from './db';
 import { type Achievement, type Dev, type Project } from './data';
+import { notifyProjectEvent } from './notifications';
 
 type Row = {
   id: number;
@@ -290,6 +291,7 @@ export function voteProject(slug: string, userId: number, delta: 1 | -1): Projec
     | undefined;
   if (!proj) return undefined;
 
+  let voted = false; // virou um voto novo? (para notificar só uma vez)
   const tx = db.transaction(() => {
     const has = db
       .prepare('SELECT 1 FROM user_votes WHERE user_id = ? AND project_id = ?')
@@ -299,6 +301,7 @@ export function voteProject(slug: string, userId: number, delta: 1 | -1): Projec
       if (has) return; // já votou — idempotente
       db.prepare('INSERT INTO user_votes (user_id, project_id) VALUES (?, ?)').run(userId, proj.id);
       db.prepare('UPDATE projects SET votes = votes + 1 WHERE id = ?').run(proj.id);
+      voted = true;
     } else {
       if (!has) return; // não havia voto
       db.prepare('DELETE FROM user_votes WHERE user_id = ? AND project_id = ?').run(userId, proj.id);
@@ -306,6 +309,9 @@ export function voteProject(slug: string, userId: number, delta: 1 | -1): Projec
     }
   });
   tx();
+
+  // Avisa o dono do projeto apenas quando um voto novo é registrado.
+  if (voted) notifyProjectEvent(proj.id, userId, 'vote');
 
   return getProjectBySlug(slug, userId);
 }
