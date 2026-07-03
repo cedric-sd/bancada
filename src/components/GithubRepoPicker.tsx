@@ -19,7 +19,6 @@ function toFormValues(repo: GithubRepo): Partial<ProjectFormValues> {
     blurb: repo.description.slice(0, 120),
     description: repo.description,
     tags: tags.join(', '),
-    stars: repo.stars > 0 ? formatStars(repo.stars) : '',
     url: repo.url,
   };
 }

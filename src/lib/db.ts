@@ -178,11 +178,21 @@ function seedIfEmpty(db: Database.Database) {
   };
   if (count > 0) return;
 
+  // Contas "fantasma" para os autores do seed: sem senha (não logam), mas viram
+  // devs de verdade — seguíveis e donos dos próprios projetos.
+  const insAuthor = db.prepare("INSERT OR IGNORE INTO users (handle, name, password_hash) VALUES (?, ?, '')");
+  const findAuthor = db.prepare('SELECT id FROM users WHERE handle = ?');
+  const authorId = (handle: string, name: string) => {
+    const h = handle.replace(/^@+/, '').toLowerCase();
+    insAuthor.run(h, name);
+    return (findAuthor.get(h) as { id: number }).id;
+  };
+
   const insert = db.prepare(`
     INSERT INTO projects
-      (slug, name, blurb, author, handle, stars, votes, cat, badge, lvl, description, tags, forks, xp_for_author)
+      (slug, name, blurb, author, handle, stars, votes, cat, badge, lvl, description, tags, forks, xp_for_author, owner_id)
     VALUES
-      (@slug, @name, @blurb, @author, @handle, @stars, @votes, @cat, @badge, @lvl, @description, @tags, @forks, @xp_for_author)
+      (@slug, @name, @blurb, @author, @handle, @stars, @votes, @cat, @badge, @lvl, @description, @tags, @forks, @xp_for_author, @owner_id)
   `);
 
   const seed = db.transaction((rows: typeof seedProjects) => {
@@ -202,6 +212,7 @@ function seedIfEmpty(db: Database.Database) {
         tags: JSON.stringify(p.tags),
         forks: p.forks,
         xp_for_author: p.xpForAuthor,
+        owner_id: authorId(p.handle, p.author),
       });
     }
   });

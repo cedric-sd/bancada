@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Board from '@/components/Board';
 import Stamp from '@/components/Stamp';
+import AchievementSeal from '@/components/AchievementSeal';
 import UnlockCelebration from '@/components/UnlockCelebration';
 import FollowButton from '@/components/FollowButton';
 import { resolveDev, getProjectBySlug } from '@/lib/projects';
@@ -11,9 +12,6 @@ import { tierForLevel } from '@/lib/tiers';
 import { isFollowing } from '@/lib/follows';
 
 export const dynamic = 'force-dynamic';
-
-// Rotações dos carimbos de conquista (visual "editorial").
-const STAMP_ROT = [-4, 3, -2, 2.5, -3, 2];
 
 const statCell = (value: string, label: string, color = '#221c12') => (
   <div
@@ -265,9 +263,9 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
           <div style={{ font: '700 11px var(--font-mono)', letterSpacing: '.14em', color: 'rgba(40,30,10,.6)', marginBottom: 13 }}>
             CONQUISTAS
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 13 }}>
-            {dev.achievements.map((a, i) => (
-              <Stamp key={a.id} label={a.label} color={a.color} rotate={STAMP_ROT[i % STAMP_ROT.length]} size="lg" />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            {dev.achievements.map((a) => (
+              <AchievementSeal key={a.id} label={a.label} color={a.color} icon={a.icon} title={a.desc} />
             ))}
           </div>
         </div>
@@ -295,7 +293,8 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                    <span style={{ font: '800 12px var(--font-archivo)', letterSpacing: '.04em', color: a.color }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, font: '800 12px var(--font-archivo)', letterSpacing: '.04em', color: a.color }}>
+                      <span aria-hidden style={{ opacity: 0.55, filter: 'grayscale(1)' }}>{a.icon}</span>
                       {a.label}
                     </span>
                     <span style={{ font: '600 10px var(--font-mono)', color: 'rgba(40,30,10,.55)' }}>
