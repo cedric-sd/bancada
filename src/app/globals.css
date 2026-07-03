@@ -86,3 +86,20 @@ a {
   0% { transform: translateX(-50%) translateY(-16px); opacity: 0; }
   100% { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
+
+/* Botão flutuante de missões: ícone que "respira" + anel pulsante. */
+@keyframes mission-bob {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-3px) rotate(-6deg); }
+}
+@keyframes mission-ring {
+  0% { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+
+.mission-bob { animation: mission-bob 2.4s ease-in-out infinite; transform-origin: center; }
+.mission-ring { animation: mission-ring 1.9s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mission-bob, .mission-ring { animation: none; }
+}
