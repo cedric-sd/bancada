@@ -50,8 +50,9 @@ direção visual da 1b, conforme o protótipo de referência.
   dia; quebra se passar um dia sem visitar).
 - **Missões da semana**: metas curtas (ex.: "vote em 3 projetos", "avalie 2",
   "publique 1") com barra de progresso, recompensadas em XP ao concluir (uma vez
-  por semana). Aparecem no placar para quem está logado; o progresso vem das
-  ações reais da semana.
+  por semana). Ficam num **botão flutuante** (com ícone animado e selo de
+  pendentes) que abre um **drawer de baixo para cima**; o progresso vem das ações
+  reais da semana.
 - **Conquistas com progresso**: além das conquistadas (carimbos), o perfil mostra
   as **próximas** com barra de progresso ("faltam N votos para +1000"). Inclui as
   de participação — **Curador** (votar em 10), **Crítico** (avaliar 5) e

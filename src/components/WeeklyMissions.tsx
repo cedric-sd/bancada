@@ -1,42 +1,26 @@
 import type { Mission } from '@/lib/missions';
 
 /**
- * Painel de missões da semana (só para quem está logado): metas curtas com
- * barra de progresso e recompensa em XP. Presentacional.
+ * Conteúdo das missões da semana (metas curtas com barra de progresso e
+ * recompensa em XP). Presentacional — vive dentro do drawer de missões.
  */
 export default function WeeklyMissions({ missions }: { missions: Mission[] }) {
   if (missions.length === 0) return null;
   const doneCount = missions.filter((m) => m.done).length;
 
   return (
-    <div
-      style={{
-        background: '#f7efda',
-        border: '1px solid #d8c79d',
-        borderRadius: 10,
-        boxShadow: '0 2px 0 rgba(0,0,0,.07),0 6px 14px rgba(0,0,0,.14)',
-        padding: '14px 16px',
-        marginBottom: 18,
-      }}
-    >
+    <div>
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 10,
+          font: '600 10px var(--font-mono)',
+          color: doneCount === missions.length ? '#4f8a3a' : 'rgba(40,30,10,.55)',
           marginBottom: 12,
         }}
       >
-        <span style={{ font: '700 11px var(--font-mono)', letterSpacing: '.14em', color: 'rgba(40,30,10,.6)' }}>
-          MISSÕES DA SEMANA
-        </span>
-        <span style={{ font: '600 10px var(--font-mono)', color: doneCount === missions.length ? '#4f8a3a' : 'rgba(40,30,10,.55)' }}>
-          {doneCount}/{missions.length} concluídas
-        </span>
+        {doneCount}/{missions.length} concluídas nesta semana
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(190px,1fr))', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 10 }}>
         {missions.map((m) => {
           const pct = Math.round((m.progress / m.target) * 100);
           return (

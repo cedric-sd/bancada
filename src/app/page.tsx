@@ -6,7 +6,7 @@ import PodiumCard from '@/components/PodiumCard';
 import RankRow from '@/components/RankRow';
 import PlacarControls from '@/components/PlacarControls';
 import WeeklyBanner from '@/components/WeeklyBanner';
-import WeeklyMissions from '@/components/WeeklyMissions';
+import MissionsDrawer from '@/components/MissionsDrawer';
 import { listProjects, type SortKey } from '@/lib/projects';
 import { currentRace, weeklyMovementMap } from '@/lib/weekly';
 import { getWeeklyMissions } from '@/lib/missions';
@@ -61,8 +61,8 @@ export default async function Home({
       {/* ciclo semanal: líder atual + atalho para o Hall da Fama */}
       <WeeklyBanner race={race} />
 
-      {/* missões da semana (só logado) */}
-      {authed ? <WeeklyMissions missions={missions} /> : null}
+      {/* missões da semana (só logado) — botão flutuante + drawer */}
+      {authed ? <MissionsDrawer missions={missions} /> : null}
 
       {/* controles: ordenação, busca e categorias */}
       <div style={{ marginBottom: 10 }}>
