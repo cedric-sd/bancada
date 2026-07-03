@@ -161,7 +161,37 @@ function init(): Database.Database {
   );
 
   seedIfEmpty(db);
+  backfillAuthorAccounts(db);
   return db;
+}
+
+/**
+ * Garante que todo autor de projeto tenha uma conta "fantasma" (seguível) e que
+ * `owner_id` aponte para ela. Bancos semeados antes das contas de autor ficavam
+ * sem dono — e, portanto, sem botão de seguir no perfil. Idempotente.
+ */
+function backfillAuthorAccounts(db: Database.Database) {
+  const orphans = db
+    .prepare(
+      `SELECT DISTINCT handle, author FROM projects
+       WHERE owner_id IS NULL AND handle IS NOT NULL AND handle <> ''`,
+    )
+    .all() as { handle: string; author: string }[];
+  if (orphans.length === 0) return;
+
+  const insAuthor = db.prepare("INSERT OR IGNORE INTO users (handle, name, password_hash) VALUES (?, ?, '')");
+  const findAuthor = db.prepare('SELECT id FROM users WHERE handle = ?');
+  const setOwner = db.prepare('UPDATE projects SET owner_id = ? WHERE handle = ? AND owner_id IS NULL');
+
+  const run = db.transaction((rows: typeof orphans) => {
+    for (const { handle, author } of rows) {
+      const h = handle.replace(/^@+/, '').toLowerCase();
+      insAuthor.run(h, author);
+      const acc = findAuthor.get(h) as { id: number } | undefined;
+      if (acc) setOwner.run(acc.id, handle);
+    }
+  });
+  run(orphans);
 }
 
 /** Adiciona uma coluna se ela ainda não existir (migração idempotente). */

@@ -263,7 +263,7 @@ export default async function DevPage({ params }: { params: Promise<{ handle: st
           <div style={{ font: '700 11px var(--font-mono)', letterSpacing: '.14em', color: 'rgba(40,30,10,.6)', marginBottom: 13 }}>
             CONQUISTAS
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
             {dev.achievements.map((a) => (
               <AchievementSeal key={a.id} label={a.label} color={a.color} icon={a.icon} title={a.desc} />
             ))}

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DarkButton from '@/components/DarkButton';
+import TagsInput from '@/components/TagsInput';
 import { categories } from '@/lib/data';
 
 const labelStyle = {
@@ -208,8 +209,12 @@ export default function ProjectForm({
           />
         </Field>
 
-        <Field label="TAGS (SEPARADAS POR VÍRGULA)">
-          <input style={fieldStyle} value={form.tags} onChange={set('tags')} placeholder="#cli, #terminal, #rust" />
+        <Field label="TAGS (VÍRGULA OU ENTER CRIA UMA BADGE)">
+          <TagsInput
+            value={form.tags}
+            onChange={(tags) => setForm((f) => ({ ...f, tags }))}
+            placeholder="#cli, #terminal, #rust"
+          />
         </Field>
 
         <Field label="SCREENSHOT (PNG, JPG, WEBP OU GIF · ATÉ 3 MB)">
