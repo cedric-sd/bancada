@@ -38,6 +38,11 @@ direção visual da 1b, conforme o protótipo de referência.
 - **Autenticação própria**: cadastro/login com senha (hash `scrypt` nativo) e
   sessão por cookie `httpOnly`. Opcionalmente, **login com GitHub** (OAuth).
 - **Publicar** exige login; o autor vem da conta. **Editar/excluir** só o dono.
+  As **estrelas** não são digitadas: o usuário informa o **link do repositório** e
+  o sistema busca a contagem no GitHub automaticamente (usa `GITHUB_TOKEN` quando
+  disponível para o limite de taxa).
+- Os **autores do seed** são contas de verdade (sem senha): têm perfil e podem ser
+  **seguidos**.
 - **Voto persistente e por usuário**: no máximo um voto por projeto por conta.
 - **Reviews reais**: avaliações (1–5 estrelas + texto) da comunidade, uma por
   usuário por projeto; não é possível avaliar o próprio projeto.
@@ -53,7 +58,7 @@ direção visual da 1b, conforme o protótipo de referência.
   por semana). Ficam num **botão flutuante** (com ícone animado e selo de
   pendentes) que abre um **drawer de baixo para cima**; o progresso vem das ações
   reais da semana.
-- **Conquistas com progresso**: além das conquistadas (carimbos), o perfil mostra
+- **Conquistas com progresso**: além das conquistadas (selos com ícone), o perfil mostra
   as **próximas** com barra de progresso ("faltam N votos para +1000"). Inclui as
   de participação — **Curador** (votar em 10), **Crítico** (avaliar 5) e
   **Comentado** (receber 5 avaliações). Ao abrir o próprio perfil com conquistas

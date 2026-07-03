@@ -39,7 +39,6 @@ export default async function EditarProjetoPage({
           blurb: project.blurb,
           description: project.description,
           tags: project.tags.join(', '),
-          stars: project.stars,
           url: project.url ?? '',
         }}
       />

@@ -34,7 +34,6 @@ export type ProjectFormValues = {
   blurb: string;
   description: string;
   tags: string;
-  stars: string;
   url: string;
 };
 
@@ -44,7 +43,6 @@ const empty: ProjectFormValues = {
   blurb: '',
   description: '',
   tags: '',
-  stars: '',
   url: '',
 };
 
@@ -86,7 +84,6 @@ export default function ProjectForm({
       cat: form.cat,
       blurb: form.blurb,
       description: form.description,
-      stars: form.stars,
       url: form.url,
       tags: form.tags
         .split(',')
@@ -175,22 +172,17 @@ export default function ProjectForm({
           <input style={fieldStyle} value={form.name} onChange={set('name')} placeholder="Ex.: Lumen" />
         </Field>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <Field label="CATEGORIA">
-            <select style={fieldStyle} value={form.cat} onChange={set('cat')}>
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="STARS NO GITHUB">
-            <input style={fieldStyle} value={form.stars} onChange={set('stars')} placeholder="Ex.: 1.2k" />
-          </Field>
-        </div>
+        <Field label="CATEGORIA">
+          <select style={fieldStyle} value={form.cat} onChange={set('cat')}>
+            {categories.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </Field>
 
-        <Field label="URL DO PROJETO (OPCIONAL)">
+        <Field label="LINK DO REPOSITÓRIO (GITHUB)">
           <input
             style={fieldStyle}
             value={form.url}
@@ -198,6 +190,9 @@ export default function ProjectForm({
             placeholder="https://github.com/voce/projeto"
             inputMode="url"
           />
+          <div style={{ font: '500 10px var(--font-mono)', color: 'rgba(40,30,10,.5)', marginTop: 6 }}>
+            As <strong>estrelas</strong> são buscadas automaticamente do GitHub a partir do link.
+          </div>
         </Field>
 
         <Field label="RESUMO (UMA LINHA)">

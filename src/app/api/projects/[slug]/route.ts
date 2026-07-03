@@ -7,6 +7,7 @@ import {
   type UpdateProjectInput,
 } from '@/lib/projects';
 import { getCurrentUser, type User } from '@/lib/auth';
+import { fetchRepoStars, parseRepo } from '@/lib/github';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -51,13 +52,17 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ sl
     return NextResponse.json({ error: 'JSON inválido.' }, { status: 400 });
   }
 
-  // Só campos editáveis pelo dono (autor/handle/votos não são alteráveis aqui).
+  // Só campos editáveis pelo dono (autor/handle/votos/estrelas não vêm daqui).
   const patch: UpdateProjectInput = {};
-  for (const key of ['name', 'blurb', 'cat', 'description', 'stars', 'url'] as const) {
+  for (const key of ['name', 'blurb', 'cat', 'description', 'url'] as const) {
     if (typeof body[key] === 'string') patch[key] = body[key] as string;
   }
   if (Array.isArray(body.tags)) {
     patch.tags = body.tags.map((t) => String(t).trim()).filter(Boolean);
+  }
+  // Estrelas são buscadas do GitHub quando a URL é de um repositório.
+  if (typeof patch.url === 'string' && parseRepo(patch.url)) {
+    patch.stars = (await fetchRepoStars(patch.url)) ?? '0';
   }
 
   const project = updateProject(slug, patch);

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createProject, listProjects, type CreateProjectInput, type SortKey } from '@/lib/projects';
 import { getCurrentUser } from '@/lib/auth';
+import { fetchRepoStars } from '@/lib/github';
 
 // Rotas de dados sempre no runtime Node (better-sqlite3 é nativo) e dinâmicas.
 export const runtime = 'nodejs';
@@ -44,6 +45,10 @@ export async function POST(request: Request) {
     ? body.tags.map((t) => String(t).trim()).filter(Boolean)
     : undefined;
 
+  // As estrelas vêm do GitHub (a partir do link do repo), não do cliente.
+  const url = typeof body.url === 'string' ? body.url : undefined;
+  const stars = (url ? await fetchRepoStars(url) : null) ?? '0';
+
   // Autor, handle e dono vêm sempre da conta autenticada.
   const project = createProject({
     name: body.name,
@@ -53,9 +58,9 @@ export async function POST(request: Request) {
     blurb: body.blurb,
     cat: body.cat,
     description: body.description,
-    stars: body.stars,
+    stars,
     tags,
-    url: typeof body.url === 'string' ? body.url : undefined,
+    url,
   });
 
   return NextResponse.json({ project }, { status: 201 });

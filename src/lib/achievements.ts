@@ -16,6 +16,7 @@ export type AchievementView = {
   label: string;
   desc: string;
   color: string;
+  icon: string;
   kind: 'badge' | 'milestone';
   earned: boolean;
   current: number;
@@ -28,6 +29,7 @@ type Def = {
   label: string;
   desc: string;
   color: string;
+  icon: string;
   kind: 'badge' | 'milestone';
   target: number;
   unit: string;
@@ -41,6 +43,7 @@ const DEFS: Def[] = [
     label: 'PRIMEIRO PROJETO',
     desc: 'Publicou o primeiro projeto',
     color: '#9a6a1f',
+    icon: '🚀',
     kind: 'badge',
     target: 1,
     unit: 'projeto',
@@ -51,6 +54,7 @@ const DEFS: Def[] = [
     label: 'TOP DA SEMANA',
     desc: 'Liderou o placar',
     color: '#b23a2a',
+    icon: '👑',
     kind: 'badge',
     target: 1,
     unit: '',
@@ -61,6 +65,7 @@ const DEFS: Def[] = [
     label: 'TOP 3',
     desc: 'Chegou ao pódio do placar',
     color: '#2f6d86',
+    icon: '🏅',
     kind: 'badge',
     target: 1,
     unit: '',
@@ -73,6 +78,7 @@ const DEFS: Def[] = [
     label: 'MARATONISTA',
     desc: 'Publique 3 projetos',
     color: '#2f6d86',
+    icon: '🏃',
     kind: 'milestone',
     target: 3,
     unit: 'projetos',
@@ -83,6 +89,7 @@ const DEFS: Def[] = [
     label: '+100 VOTOS',
     desc: 'Receba 100 votos',
     color: '#557a38',
+    icon: '💯',
     kind: 'milestone',
     target: 100,
     unit: 'votos',
@@ -93,6 +100,7 @@ const DEFS: Def[] = [
     label: '+1000 VOTOS',
     desc: 'Receba 1000 votos',
     color: '#557a38',
+    icon: '🔥',
     kind: 'milestone',
     target: 1000,
     unit: 'votos',
@@ -103,6 +111,7 @@ const DEFS: Def[] = [
     label: 'CURADOR',
     desc: 'Vote em 10 projetos',
     color: '#7a5aa0',
+    icon: '🗳️',
     kind: 'milestone',
     target: 10,
     unit: 'votos dados',
@@ -113,6 +122,7 @@ const DEFS: Def[] = [
     label: 'CRÍTICO',
     desc: 'Avalie 5 projetos',
     color: '#a0623a',
+    icon: '⭐',
     kind: 'milestone',
     target: 5,
     unit: 'avaliações',
@@ -123,6 +133,7 @@ const DEFS: Def[] = [
     label: 'COMENTADO',
     desc: 'Receba 5 avaliações',
     color: '#3a6ea0',
+    icon: '💬',
     kind: 'milestone',
     target: 5,
     unit: 'avaliações',
@@ -139,6 +150,7 @@ export function buildAchievements(m: Metrics): AchievementView[] {
       label: d.label,
       desc: d.desc,
       color: d.color,
+      icon: d.icon,
       kind: d.kind,
       earned: raw >= d.target,
       current: Math.min(raw, d.target),
