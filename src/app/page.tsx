@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Board from '@/components/Board';
 import Logo from '@/components/Logo';
 import UserMenu from '@/components/UserMenu';
+import GithubButton from '@/components/GithubButton';
 import PodiumCard from '@/components/PodiumCard';
 import RankRow from '@/components/RankRow';
 import PlacarControls from '@/components/PlacarControls';
@@ -55,7 +56,10 @@ export default async function Home({
         }}
       >
         <Logo subtitle="PLACAR DA SEMANA" />
-        <UserMenu user={user} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <GithubButton href="https://github.com/cedric-sd" />
+          <UserMenu user={user} />
+        </div>
       </div>
 
       {/* ciclo semanal: líder atual + atalho para o Hall da Fama */}

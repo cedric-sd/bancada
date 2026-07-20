@@ -114,6 +114,8 @@ describe('Home (placar)', () => {
     // ações de conta (deslogado)
     expect(screen.getByRole('link', { name: 'Entrar' })).toBeInTheDocument();
     expect(screen.getByText('+ Publicar')).toBeInTheDocument();
+    // botão do GitHub no header
+    expect(screen.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/cedric-sd');
   });
 
   it('mostra a faixa do ciclo semanal com o líder e atalho para o Hall da Fama', async () => {
