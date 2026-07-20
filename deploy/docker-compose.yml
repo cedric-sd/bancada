@@ -1,0 +1,41 @@
+# Compose de produção da Bancada — roda na VPS.
+# O CI copia este arquivo (+ Caddyfile) para ~/bancada/ e executa
+#   docker compose pull && docker compose up -d
+# Os segredos ficam num .env ao lado (ver .env.example), nunca no repositório.
+
+services:
+  app:
+    image: ghcr.io/cedric-sd/bancada:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+    volumes:
+      - bancada-data:/app/data # persiste o SQLite (WAL + sidecars)
+    expose:
+      - "3000" # só interno; o Caddy faz o proxy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file: .env # usa DOMAIN e ACME_EMAIL
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data # certificados (Let's Encrypt) — persistir evita rate limit
+      - caddy-config:/config
+
+volumes:
+  bancada-data:
+  caddy-data:
+  caddy-config:

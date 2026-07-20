@@ -105,6 +105,10 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      # Mapear o secret para env permite pular o deploy na VPS até ela estar
+      # configurada (não dá para checar `secrets` direto num `if:`).
+      SSH_HOST: ${{ secrets.SSH_HOST }}
     steps:
       - uses: docker/setup-buildx-action@v3
 
@@ -137,3 +141,38 @@ jobs:
           echo "Promovendo $SOURCE →"
           printf '  %s\n' "${args[@]}"
           docker buildx imagetools create "${args[@]}" "$SOURCE"
+
+      # ---- Deploy real na VPS (só em push na main e se a VPS estiver configurada) ----
+      # Requer os secrets do environment `production`: SSH_HOST, SSH_USER, SSH_KEY
+      # (chave privada) e, opcionalmente, SSH_PORT. Enquanto não existirem, os
+      # passos abaixo são pulados e o pipeline segue verde.
+      - name: Checkout (arquivos de deploy)
+        if: env.SSH_HOST != '' && github.ref == 'refs/heads/main'
+        uses: actions/checkout@v4
+
+      - name: Copiar compose + Caddyfile para a VPS
+        if: env.SSH_HOST != '' && github.ref == 'refs/heads/main'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "deploy/docker-compose.yml,deploy/Caddyfile"
+          target: "~/bancada"
+          strip_components: 1 # remove o prefixo deploy/ → arquivos ficam em ~/bancada/
+
+      - name: Atualizar container na VPS
+        if: env.SSH_HOST != '' && github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            set -e
+            cd ~/bancada
+            docker compose pull
+            docker compose up -d
+            docker image prune -f

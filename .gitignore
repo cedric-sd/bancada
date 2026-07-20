@@ -42,3 +42,6 @@ next-env.d.ts
 
 # SQLite local (gerado/semeado em runtime)
 /data/
+
+# Segredos de deploy (o .env fica só na VPS)
+/deploy/.env

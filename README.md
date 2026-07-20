@@ -137,6 +137,53 @@ publicar: o formulário é pré-preenchido com nome, descrição, tags, estrelas
 URL do projeto. (Opcional: defina `GITHUB_TOKEN` para elevar o limite de taxa da
 listagem de repositórios.)
 
+## Deploy contínuo (VPS + Docker)
+
+O pipeline `.github/workflows/ci.yml` faz **test → build → deploy**. A cada push na
+`main`, a imagem é construída e publicada no **GHCR** (`ghcr.io/cedric-sd/bancada`,
+tags `sha-…` e `latest`) e, se a VPS estiver configurada, o deploy **entra por SSH e
+atualiza o container** (`docker compose pull && up -d`). Enquanto os secrets de SSH
+não existirem, o passo de VPS é pulado e o pipeline segue verde.
+
+Os arquivos de produção ficam em [`deploy/`](deploy/): `docker-compose.yml` (app +
+Caddy para HTTPS automático), `Caddyfile` e `.env.example`. O SQLite é persistido no
+volume `bancada-data` (montado em `/app/data`).
+
+### Configuração da VPS (uma vez)
+
+1. **VPS** (Hostinger KVM ou similar, Ubuntu 22.04+) com acesso SSH.
+2. Instalar Docker + Compose:
+   ```bash
+   curl -fsSL https://get.docker.com | sh
+   ```
+3. Preparar a pasta e o `.env` (segredos ficam **só na VPS**):
+   ```bash
+   mkdir -p ~/bancada && cd ~/bancada
+   # copie deploy/.env.example do repo para ~/bancada/.env e preencha
+   ```
+4. **Domínio**: registro **A** apontando `DOMAIN` para o IP da VPS. O Caddy emite o
+   certificado HTTPS sozinho (Let's Encrypt).
+5. **Firewall**: liberar `22, 80, 443` (ex.: `ufw allow 22,80,443/tcp`).
+6. **Chave SSH do CI**: gerar um par dedicado, adicionar a **pública** em
+   `~/.ssh/authorized_keys` da VPS.
+7. Se o pacote GHCR for **privado**, rodar `docker login ghcr.io` na VPS com um PAT
+   `read:packages` (com pacote público não precisa).
+
+### Secrets no GitHub (ambiente `production`)
+
+Em **Settings → Environments → production**:
+
+| Secret | Valor |
+| --- | --- |
+| `SSH_HOST` | IP ou host da VPS |
+| `SSH_USER` | usuário SSH (ex.: `deploy` ou `root`) |
+| `SSH_KEY` | **chave privada** do par gerado no passo 6 |
+| `SSH_PORT` | opcional (padrão `22`) |
+
+Primeiro deploy manual (opcional, para validar): com o `.env` pronto e o
+`docker-compose.yml`/`Caddyfile` em `~/bancada/`, rode `docker compose up -d` e
+acesse `https://SEU_DOMINIO`.
+
 ## Estrutura
 
 ```

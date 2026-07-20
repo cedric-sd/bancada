@@ -1,0 +1,13 @@
+# HTTPS automático (Let's Encrypt) + proxy reverso para o app.
+# DOMAIN e ACME_EMAIL vêm do .env (passados ao container do Caddy).
+
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+	# O Caddy injeta X-Forwarded-Proto/Host, de que o app precisa para montar a
+	# origem pública (OAuth do GitHub) e marcar os cookies como secure.
+	reverse_proxy app:3000
+}
