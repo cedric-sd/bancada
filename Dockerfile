@@ -36,6 +36,11 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Diretório do SQLite com o dono do usuário de runtime: um volume montado vazio
+# herda esse uid (1001) e fica gravável. Persistir /app/data preserva os dados.
+RUN mkdir -p /app/data && chown nextjs:nodejs /app/data
+VOLUME /app/data
+
 USER nextjs
 EXPOSE 3000
 
