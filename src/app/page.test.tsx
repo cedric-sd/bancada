@@ -196,4 +196,16 @@ describe('Home (placar)', () => {
 
     expect(mockedList).toHaveBeenCalledWith(undefined, expect.objectContaining({ sort: 'novos' }));
   });
+
+  it('mostra a versão do app no rodapé quando APP_VERSION está definida', async () => {
+    const prev = process.env.APP_VERSION;
+    process.env.APP_VERSION = '9.9.9';
+    mockedGetUser.mockResolvedValue(null);
+    mockedList.mockReturnValue(sample);
+
+    await renderHome();
+
+    expect(screen.getByText('v9.9.9')).toBeInTheDocument();
+    process.env.APP_VERSION = prev;
+  });
 });
