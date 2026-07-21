@@ -150,7 +150,7 @@ jobs:
         if: env.SSH_HOST != '' && github.ref == 'refs/heads/main'
         uses: actions/checkout@v4
 
-      - name: Copiar compose + Caddyfile para a VPS
+      - name: Copiar compose para a VPS
         if: env.SSH_HOST != '' && github.ref == 'refs/heads/main'
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -158,9 +158,9 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          source: "deploy/docker-compose.yml,deploy/Caddyfile"
+          source: "deploy/docker-compose.yml"
           target: "~/bancada"
-          strip_components: 1 # remove o prefixo deploy/ → arquivos ficam em ~/bancada/
+          strip_components: 1 # remove o prefixo deploy/ → arquivo fica em ~/bancada/
 
       - name: Atualizar container na VPS
         if: env.SSH_HOST != '' && github.ref == 'refs/heads/main'

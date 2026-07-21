@@ -145,28 +145,29 @@ tags `sha-…` e `latest`) e, se a VPS estiver configurada, o deploy **entra por
 atualiza o container** (`docker compose pull && up -d`). Enquanto os secrets de SSH
 não existirem, o passo de VPS é pulado e o pipeline segue verde.
 
-Os arquivos de produção ficam em [`deploy/`](deploy/): `docker-compose.yml` (app +
-Caddy para HTTPS automático), `Caddyfile` e `.env.example`. O SQLite é persistido no
-volume `bancada-data` (montado em `/app/data`).
+Os arquivos de produção ficam em [`deploy/`](deploy/): `docker-compose.yml` e
+`.env.example`. O SQLite é persistido no volume `bancada-data` (montado em
+`/app/data`). O HTTPS/proxy fica a cargo de um **Traefik** já existente na VPS
+(provider Docker): o container não publica portas — as **labels** do compose
+registram a rota `Host(${DOMAIN})` no entrypoint `websecure` com o certresolver
+`letsencrypt` (ajustáveis por `TRAEFIK_ENTRYPOINT`/`TRAEFIK_CERTRESOLVER`).
 
 ### Configuração da VPS (uma vez)
 
-1. **VPS** (Hostinger KVM ou similar, Ubuntu 22.04+) com acesso SSH.
-2. Instalar Docker + Compose:
-   ```bash
-   curl -fsSL https://get.docker.com | sh
-   ```
-3. Preparar a pasta e o `.env` (segredos ficam **só na VPS**):
+1. **VPS** (Hostinger KVM ou similar, Ubuntu 22.04+) com acesso SSH e Docker.
+2. Preparar a pasta e o `.env` (segredos ficam **só na VPS**):
    ```bash
    mkdir -p ~/bancada && cd ~/bancada
-   # copie deploy/.env.example do repo para ~/bancada/.env e preencha
+   # copie deploy/.env.example do repo para ~/bancada/.env e preencha (DOMAIN, GITHUB_*)
    ```
-4. **Domínio**: registro **A** apontando `DOMAIN` para o IP da VPS. O Caddy emite o
-   certificado HTTPS sozinho (Let's Encrypt).
-5. **Firewall**: liberar `22, 80, 443` (ex.: `ufw allow 22,80,443/tcp`).
-6. **Chave SSH do CI**: gerar um par dedicado, adicionar a **pública** em
+3. **Traefik**: ter um Traefik rodando com o provider Docker
+   (`--providers.docker=true`) e um certresolver ACME (ex.: `letsencrypt`). O compose
+   se integra a ele por labels — nenhuma porta é publicada pelo app.
+4. **Domínio**: registro **A** apontando `DOMAIN` para o IP da VPS (o Traefik emite o
+   certificado via Let's Encrypt).
+5. **Chave SSH do CI**: gerar um par dedicado, adicionar a **pública** em
    `~/.ssh/authorized_keys` da VPS.
-7. Se o pacote GHCR for **privado**, rodar `docker login ghcr.io` na VPS com um PAT
+6. Se o pacote GHCR for **privado**, rodar `docker login ghcr.io` na VPS com um PAT
    `read:packages` (com pacote público não precisa).
 
 ### Secrets no GitHub (ambiente `production`)
@@ -177,12 +178,12 @@ Em **Settings → Environments → production**:
 | --- | --- |
 | `SSH_HOST` | IP ou host da VPS |
 | `SSH_USER` | usuário SSH (ex.: `deploy` ou `root`) |
-| `SSH_KEY` | **chave privada** do par gerado no passo 6 |
+| `SSH_KEY` | **chave privada** do par gerado no passo 5 |
 | `SSH_PORT` | opcional (padrão `22`) |
 
-Primeiro deploy manual (opcional, para validar): com o `.env` pronto e o
-`docker-compose.yml`/`Caddyfile` em `~/bancada/`, rode `docker compose up -d` e
-acesse `https://SEU_DOMINIO`.
+Primeiro deploy manual (opcional, para validar): com o `.env` e o
+`docker-compose.yml` em `~/bancada/`, rode `docker compose up -d` e acesse
+`https://SEU_DOMINIO`.
 
 ## Estrutura
 
