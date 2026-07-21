@@ -144,6 +144,21 @@ export default async function Home({
           Nenhum projeto encontrado com esses filtros.
         </div>
       ) : null}
+
+      {/* rodapé discreto: versão do app (lida do package.json em build-time) */}
+      {process.env.APP_VERSION ? (
+        <footer
+          style={{
+            textAlign: 'center',
+            marginTop: 30,
+            font: '500 9px var(--font-mono)',
+            letterSpacing: '.1em',
+            color: 'rgba(40,30,10,.3)',
+          }}
+        >
+          v{process.env.APP_VERSION}
+        </footer>
+      ) : null}
     </Board>
   );
 }
