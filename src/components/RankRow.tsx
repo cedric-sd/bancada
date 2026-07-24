@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Project } from '@/lib/data';
-import type { Move } from '@/lib/weekly';
+import type { Move } from '@/lib/monthly';
 import { tierForLevel } from '@/lib/tiers';
 import VoteButton from './VoteButton';
 import Rating from './Rating';

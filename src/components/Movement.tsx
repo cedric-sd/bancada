@@ -1,10 +1,10 @@
 import type { CSSProperties } from 'react';
-import type { Move } from '@/lib/weekly';
+import type { Move } from '@/lib/monthly';
 
 /**
- * Indicador de variação de posição na disputa da semana: ▲ subiu, ▼ caiu,
- * "novo" entrou nesta semana, "=" manteve. `move` ausente → não renderiza
- * (projeto sem votos na semana). Presentacional e puro.
+ * Indicador de variação de posição na disputa do mês: ▲ subiu, ▼ caiu,
+ * "novo" entrou neste mês, "=" manteve. `move` ausente → não renderiza
+ * (projeto sem votos no mês). Presentacional e puro.
  */
 export default function Movement({ move, style }: { move?: Move; style?: CSSProperties }) {
   if (!move) return null;
@@ -25,7 +25,7 @@ export default function Movement({ move, style }: { move?: Move; style?: CSSProp
     return (
       <span
         style={{ ...base, color: '#2f6d86', background: '#dcebf1', border: '1px solid #a9cdda' }}
-        title="Novo na disputa da semana"
+        title="Novo na disputa do mês"
       >
         novo
       </span>
@@ -36,7 +36,7 @@ export default function Movement({ move, style }: { move?: Move; style?: CSSProp
     return (
       <span
         style={{ ...base, color: '#4f8a3a', background: '#e4ecca', border: '1px solid #b8cf8f' }}
-        title={`Subiu ${move.delta} na disputa da semana`}
+        title={`Subiu ${move.delta} na disputa do mês`}
       >
         ▲{move.delta}
       </span>
@@ -47,7 +47,7 @@ export default function Movement({ move, style }: { move?: Move; style?: CSSProp
     return (
       <span
         style={{ ...base, color: '#b23a2a', background: '#f4dcd6', border: '1px solid #dcaea3' }}
-        title={`Caiu ${-move.delta} na disputa da semana`}
+        title={`Caiu ${-move.delta} na disputa do mês`}
       >
         ▼{-move.delta}
       </span>
@@ -57,7 +57,7 @@ export default function Movement({ move, style }: { move?: Move; style?: CSSProp
   return (
     <span
       style={{ ...base, color: 'rgba(40,30,10,.5)', background: '#ece2c6', border: '1px solid #cdbd97' }}
-      title="Manteve a posição na disputa da semana"
+      title="Manteve a posição na disputa do mês"
     >
       =
     </span>

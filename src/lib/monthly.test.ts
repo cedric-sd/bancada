@@ -1,11 +1,11 @@
 /**
  * @jest-environment node
  */
-import { movementBetween } from './weekly';
+import { movementBetween } from './monthly';
 
 describe('movementBetween', () => {
   it('marca subida, queda e manutenção de posição', () => {
-    // Semana passada: a, b, c. Agora: b subiu, a caiu, c manteve.
+    // Mês passado: a, b, c. Agora: b subiu, a caiu, c manteve.
     const moves = movementBetween(['b', 'a', 'c'], ['a', 'b', 'c']);
     expect(moves.b).toEqual({ delta: 1, isNew: false }); // 2º → 1º
     expect(moves.a).toEqual({ delta: -1, isNew: false }); // 1º → 2º
@@ -18,13 +18,13 @@ describe('movementBetween', () => {
     expect(moves.a).toEqual({ delta: -1, isNew: false }); // 1º → 2º
   });
 
-  it('só devolve movimento para projetos da semana atual', () => {
+  it('só devolve movimento para projetos do mês atual', () => {
     const moves = movementBetween(['a'], ['a', 'b']);
     expect(Object.keys(moves)).toEqual(['a']); // 'b' saiu da disputa → não aparece
     expect(moves.a).toEqual({ delta: 0, isNew: false });
   });
 
-  it('semana anterior vazia → tudo é novo', () => {
+  it('mês anterior vazio → tudo é novo', () => {
     const moves = movementBetween(['a', 'b'], []);
     expect(moves.a).toEqual({ delta: 0, isNew: true });
     expect(moves.b).toEqual({ delta: 0, isNew: true });

@@ -2,7 +2,7 @@
 
 ![Bancada — vitrine gamificada de side projects](docs/banner.png)
 
-**Bancada** é uma vitrine gamificada de side projects: um placar semanal com
+**Bancada** é uma vitrine gamificada de side projects: um placar mensal com
 pódio, votos e XP para a comunidade de builders. A interface segue uma metáfora
 física de "bancada de trabalho" — madeira texturizada, papel, carimbos
 editoriais e botões que afundam ao clicar.
@@ -23,7 +23,7 @@ Próximos passos de gamificação estão em [`ROADMAP.md`](ROADMAP.md).
 | `/publicar`, `/project/[slug]/editar` | **Formulários** | Publicar (requer login) e editar (só o dono). |
 | `/perfil/editar` | **Perfil** | Editar o próprio nome, bio e avatar. |
 | `/meus-projetos` | **Meus projetos** | Gerenciar (ver/editar/excluir) os projetos que você publicou. |
-| `/hall-da-fama` | **Hall da Fama** | Disputa da semana atual (top 3 + quanto falta) e os vencedores de semanas passadas. |
+| `/hall-da-fama` | **Hall da Fama** | Disputa do mês atual (top 3 + quanto falta) e os vencedores de meses passados. |
 | `/notificacoes` | **Notificações** | Feed de eventos dos seus projetos (votos e avaliações recebidos), com selo de não-lidas no header. |
 | `/categorias` | **Rankings por categoria** | O "MELHOR EM {categoria}" (campeão + vice-campeões) de cada categoria. |
 | `/seguindo` | **Seguindo** | Placar de rivalidade (você vs. quem você segue) + feed com os projetos deles (mais recentes primeiro). |
@@ -72,13 +72,13 @@ direção visual da 1b, conforme o protótipo de referência.
   seguir, você recebe um aviso (feed em `/notificacoes` + selo de não-lidas no
   sino do header). Só a primeira avaliação de cada pessoa gera aviso; editar uma
   avaliação não repete.
-- **Ciclo semanal**: o placar da semana conta os votos da semana corrente
-  (segunda 00:00 UTC → segunda seguinte). Ao virar a semana, o 1º lugar é coroado
-  e arquivado no **Hall da Fama** — sem agendador: as semanas concluídas são
-  "encerradas" de forma preguiçosa na leitura. Uma faixa no topo do placar mostra
-  o líder da semana e quanto falta para encerrar.
+- **Ciclo mensal**: o placar do mês conta os votos do mês corrente (dia 1º 00:00
+  UTC → dia 1º seguinte). Ao virar o mês, o 1º lugar é coroado e arquivado no
+  **Hall da Fama** — sem agendador: os meses concluídos são "encerrados" de forma
+  preguiçosa na leitura. Uma faixa no topo do placar mostra o líder do mês e
+  quanto falta para encerrar.
 - **Variação de posição** (`▲/▼`): cada projeto mostra como se moveu na disputa
-  desta semana vs. a semana passada (`▲2` subiu, `▼1` caiu, `novo` entrou), no
+  deste mês vs. o mês passado (`▲2` subiu, `▼1` caiu, `novo` entrou), no
   placar (pódio e lista) e no Hall da Fama.
 - **Juice**: micro-interações satisfatórias e sem dependências — o ▲ do voto dá
   um "pop", faíscas saem do botão e há **confete** quando o voto cruza um marco

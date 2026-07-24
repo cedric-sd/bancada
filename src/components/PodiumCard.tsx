@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Project } from '@/lib/data';
-import type { Move } from '@/lib/weekly';
+import type { Move } from '@/lib/monthly';
 import VoteButton from './VoteButton';
 import Stamp from './Stamp';
 import Thumb from './Thumb';
@@ -75,7 +75,7 @@ export default function PodiumCard({
             boxShadow: '0 2px 5px rgba(0,0,0,.35)',
           }}
         >
-          {project.badge || 'TOP DA SEMANA'}
+          {project.badge || 'TOP DO MÊS'}
         </div>
       ) : null}
 

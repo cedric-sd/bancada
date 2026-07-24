@@ -4,7 +4,7 @@ import BancadaMark from './BancadaMark';
 /**
  * Marca da Bancada: o selo (pódio + upvote) gravado + wordmark e subtítulo.
  */
-export default function Logo({ subtitle = 'PLACAR DA SEMANA' }: { subtitle?: string }) {
+export default function Logo({ subtitle = 'PLACAR DO MÊS' }: { subtitle?: string }) {
   return (
     <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
       <BancadaMark size={38} />
