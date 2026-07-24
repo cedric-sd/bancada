@@ -185,6 +185,25 @@ Primeiro deploy manual (opcional, para validar): com o `.env` e o
 `docker-compose.yml` em `~/bancada/`, rode `docker compose up -d` e acesse
 `https://SEU_DOMINIO`.
 
+### Banco limpo em produção
+
+Em produção (`NODE_ENV=production`) o banco **inicia vazio** — nenhum projeto ou
+votante de demonstração é criado. Assim a aplicação sobe limpa no servidor online.
+Para popular um banco vazio com a vitrine de exemplo (útil só em demos), defina
+`SEED_DEMO=1` no `.env`. Fora de produção, o seed continua ligado por padrão.
+
+**Zerar um banco que já tem dados** (o SQLite vive no volume `bancada-data`):
+
+```bash
+cd ~/bancada
+docker compose down            # para o container (mantém o volume)
+docker volume rm bancada_bancada-data   # apaga o banco; confirme o nome com `docker volume ls`
+docker compose up -d           # sobe de novo com o banco vazio
+```
+
+> O nome real do volume costuma ter o prefixo do projeto (a pasta), por isso
+> `bancada_bancada-data`. Confira com `docker volume ls | grep bancada`.
+
 ## Estrutura
 
 ```
