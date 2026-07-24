@@ -160,9 +160,26 @@ function init(): Database.Database {
     'CREATE UNIQUE INDEX IF NOT EXISTS idx_users_github_id ON users(github_id) WHERE github_id IS NOT NULL',
   );
 
-  seedIfEmpty(db);
+  if (shouldSeedDemo()) seedIfEmpty(db);
   backfillAuthorAccounts(db);
   return db;
+}
+
+/**
+ * Decide se o banco vazio deve receber os dados de demonstração (projetos e
+ * votantes fictícios do seed). O servidor online precisa iniciar limpo, então
+ * em produção NÃO semeamos por padrão — só quando explicitamente pedido.
+ *
+ * Controle por `SEED_DEMO`:
+ *   - "1"/"true"  → semeia (mesmo em produção).
+ *   - "0"/"false" → não semeia (mesmo em dev).
+ *   - ausente     → semeia só fora de produção (dev/test mantêm a vitrine viva).
+ */
+function shouldSeedDemo(): boolean {
+  const flag = process.env.SEED_DEMO?.trim().toLowerCase();
+  if (flag === '1' || flag === 'true' || flag === 'yes') return true;
+  if (flag === '0' || flag === 'false' || flag === 'no') return false;
+  return process.env.NODE_ENV !== 'production';
 }
 
 /**
