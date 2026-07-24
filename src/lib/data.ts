@@ -78,7 +78,7 @@ export const seedProjects: SeedProject[] = [
     stars: '3.2k',
     votes: '1.428',
     cat: 'Terminal',
-    badge: 'TOP DA SEMANA',
+    badge: 'TOP DO MÊS',
     lvl: 14,
     description:
       'Lumen monta temas de terminal com pré-visualização ao vivo enquanto você ajusta contraste, paleta e fontes. Importa esquemas existentes, exporta para iTerm, Alacritty e Ghostty, e versiona cada tema como um arquivo legível.',

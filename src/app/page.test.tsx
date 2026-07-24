@@ -13,7 +13,7 @@ jest.mock('next/navigation', () => ({
 // Camada de dados e sessão — mockadas para não tocar SQLite nem cookies.
 jest.mock('@/lib/auth', () => ({ getCurrentUser: jest.fn() }));
 jest.mock('@/lib/projects', () => ({ listProjects: jest.fn() }));
-jest.mock('@/lib/weekly', () => ({ currentRace: jest.fn(), weeklyMovementMap: jest.fn(() => ({})) }));
+jest.mock('@/lib/monthly', () => ({ currentRace: jest.fn(), monthlyMovementMap: jest.fn(() => ({})) }));
 // NotificationsBell (no header do usuário logado) lê a contagem de não-lidas.
 jest.mock('@/lib/notifications', () => ({ unreadCount: jest.fn(() => 3) }));
 // Missões da semana (só logado).
@@ -21,7 +21,7 @@ jest.mock('@/lib/missions', () => ({ getWeeklyMissions: jest.fn(() => []) }));
 
 import { getCurrentUser } from '@/lib/auth';
 import { listProjects } from '@/lib/projects';
-import { currentRace, type WeeklyRace } from '@/lib/weekly';
+import { currentRace, type MonthlyRace } from '@/lib/monthly';
 import { getWeeklyMissions } from '@/lib/missions';
 
 const mockedGetUser = getCurrentUser as jest.MockedFunction<typeof getCurrentUser>;
@@ -37,12 +37,12 @@ const leaderEntry = {
   author: 'Mara Klein',
   handle: '@marakt',
   hasImage: false,
-  weeklyVotes: 12,
+  monthlyVotes: 12,
 };
-const race: WeeklyRace = {
-  key: '2024-06-24',
-  range: '24 jun – 30 jun',
-  endsIn: '3d',
+const race: MonthlyRace = {
+  key: '2026-07',
+  range: 'julho 2026',
+  endsIn: '12d',
   top: [leaderEntry],
   leader: leaderEntry,
 };
@@ -118,14 +118,14 @@ describe('Home (placar)', () => {
     expect(screen.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/cedric-sd');
   });
 
-  it('mostra a faixa do ciclo semanal com o líder e atalho para o Hall da Fama', async () => {
+  it('mostra a faixa do ciclo mensal com o líder e atalho para o Hall da Fama', async () => {
     mockedGetUser.mockResolvedValue(null);
     mockedList.mockReturnValue(sample);
 
     await renderHome();
 
     expect(screen.getByText('EM DISPUTA')).toBeInTheDocument();
-    expect(screen.getByText('LÍDER DA SEMANA')).toBeInTheDocument();
+    expect(screen.getByText('LÍDER DO MÊS')).toBeInTheDocument();
     expect(screen.getByText('▲ 12')).toBeInTheDocument();
     const hall = screen.getByRole('link', { name: /HALL DA FAMA/ });
     expect(hall).toHaveAttribute('href', '/hall-da-fama');
@@ -142,7 +142,7 @@ describe('Home (placar)', () => {
       expect(screen.getByText(name)).toBeInTheDocument();
     }
     // carimbo do líder aparece no pódio
-    expect(screen.getByText('TOP DA SEMANA')).toBeInTheDocument();
+    expect(screen.getByText('TOP DO MÊS')).toBeInTheDocument();
   });
 
   it('exibe a média de estrelas no card quando há avaliações', async () => {
@@ -164,7 +164,7 @@ describe('Home (placar)', () => {
     // cabeçalho de resultados inclui a categoria filtrada
     expect(screen.getByText(/1 resultado.*Design/)).toBeInTheDocument();
     // sem pódio → sem carimbo do líder
-    expect(screen.queryByText('TOP DA SEMANA')).not.toBeInTheDocument();
+    expect(screen.queryByText('TOP DO MÊS')).not.toBeInTheDocument();
     expect(screen.getByText('Stipple')).toBeInTheDocument();
   });
 
