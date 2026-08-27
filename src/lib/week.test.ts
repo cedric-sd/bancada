@@ -1,4 +1,4 @@
-import { addWeeks, formatWeekRange, startOfWeek, timeLeftLabel, weekBounds, weekKey } from './week';
+import { addWeeks, startOfWeek, weekBounds, weekKey } from './week';
 
 describe('week', () => {
   it('startOfWeek volta para a segunda-feira (UTC)', () => {
@@ -20,19 +20,5 @@ describe('week', () => {
     const b = weekBounds('2024-01-01');
     expect(b.start).toBe('2024-01-01 00:00:00');
     expect(b.end).toBe('2024-01-08 00:00:00');
-  });
-
-  it('formatWeekRange', () => {
-    expect(formatWeekRange('2024-01-01')).toBe('1 jan – 7 jan');
-    expect(formatWeekRange('2024-06-24')).toBe('24 jun – 30 jun');
-  });
-
-  it('timeLeftLabel', () => {
-    // Segunda 00:00 → faltam 7 dias exatos para a próxima segunda.
-    expect(timeLeftLabel(new Date('2024-01-01T00:00:00Z'))).toBe('7d');
-    // Sexta 00:00 → faltam 3 dias.
-    expect(timeLeftLabel(new Date('2024-01-05T00:00:00Z'))).toBe('3d');
-    // Domingo 22:00 → faltam 2h.
-    expect(timeLeftLabel(new Date('2024-01-07T22:00:00Z'))).toBe('2h');
   });
 });

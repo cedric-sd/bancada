@@ -1,7 +1,6 @@
 import { getDb } from './db';
 import { grantXp } from './xp';
-import { currentWeekKey } from './weekly';
-import { weekBounds } from './week';
+import { currentWeekKey, weekBounds } from './week';
 
 // Missões da semana: metas curtas que ensinam o loop e direcionam comportamento.
 // O progresso vem das ações reais registradas em xp_events na semana corrente.

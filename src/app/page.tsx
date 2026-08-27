@@ -6,10 +6,10 @@ import GithubButton from '@/components/GithubButton';
 import PodiumCard from '@/components/PodiumCard';
 import RankRow from '@/components/RankRow';
 import PlacarControls from '@/components/PlacarControls';
-import WeeklyBanner from '@/components/WeeklyBanner';
+import MonthlyBanner from '@/components/MonthlyBanner';
 import MissionsDrawer from '@/components/MissionsDrawer';
 import { listProjects, type SortKey } from '@/lib/projects';
-import { currentRace, weeklyMovementMap } from '@/lib/weekly';
+import { currentRace, monthlyMovementMap } from '@/lib/monthly';
 import { getWeeklyMissions } from '@/lib/missions';
 import { getCurrentUser } from '@/lib/auth';
 import { categories } from '@/lib/data';
@@ -32,7 +32,7 @@ export default async function Home({
   const authed = !!user;
   const all = listProjects(user?.id, { sort, cat: category, q: query });
   const race = currentRace();
-  const moves = weeklyMovementMap();
+  const moves = monthlyMovementMap();
   const missions = user ? getWeeklyMissions(user.id) : [];
 
   // Pódio só na visão padrão (sem busca nem filtro de categoria).
@@ -55,15 +55,15 @@ export default async function Home({
           gap: 14,
         }}
       >
-        <Logo subtitle="PLACAR DA SEMANA" />
+        <Logo subtitle="PLACAR DO MÊS" />
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <GithubButton href="https://github.com/cedric-sd" />
           <UserMenu user={user} />
         </div>
       </div>
 
-      {/* ciclo semanal: líder atual + atalho para o Hall da Fama */}
-      <WeeklyBanner race={race} />
+      {/* ciclo mensal: líder atual + atalho para o Hall da Fama */}
+      <MonthlyBanner race={race} />
 
       {/* missões da semana (só logado) — botão flutuante + drawer */}
       {authed ? <MissionsDrawer missions={missions} /> : null}
@@ -98,7 +98,7 @@ export default async function Home({
               project={podium[0]}
               place={1}
               palette="warm"
-              note={isTop ? 'líder · 3 sem.' : undefined}
+              note={isTop ? 'líder · 3 meses' : undefined}
               authed={authed}
               move={moves[podium[0].slug]}
             />

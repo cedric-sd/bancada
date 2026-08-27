@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import type { WeeklyRace } from '@/lib/weekly';
+import type { MonthlyRace } from '@/lib/monthly';
 
 /**
- * Faixa do ciclo semanal no topo do placar: mostra a semana em disputa, quem
+ * Faixa do ciclo mensal no topo do placar: mostra o mês em disputa, quem
  * lidera agora e quanto falta para encerrar — com atalho para o Hall da Fama.
  */
-export default function WeeklyBanner({ race }: { race: WeeklyRace }) {
+export default function MonthlyBanner({ race }: { race: MonthlyRace }) {
   const { leader } = race;
 
   return (
@@ -54,7 +54,7 @@ export default function WeeklyBanner({ race }: { race: WeeklyRace }) {
         {leader ? (
           <div style={{ minWidth: 0 }}>
             <div style={{ font: '600 8.5px var(--font-mono)', letterSpacing: '.14em', color: 'rgba(240,230,205,.5)' }}>
-              LÍDER DA SEMANA
+              LÍDER DO MÊS
             </div>
             <Link
               href={`/project/${leader.slug}`}
@@ -62,13 +62,13 @@ export default function WeeklyBanner({ race }: { race: WeeklyRace }) {
             >
               <span style={{ font: '900 17px var(--font-archivo)', color: '#f3ead2' }}>{leader.name}</span>
               <span style={{ font: '700 11px var(--font-mono)', color: '#8fbf6a', flex: 'none' }}>
-                ▲ {leader.weeklyVotes}
+                ▲ {leader.monthlyVotes}
               </span>
             </Link>
           </div>
         ) : (
           <div style={{ font: '500 13px/1.4 var(--font-news)', color: 'rgba(240,230,205,.75)' }}>
-            Ninguém pontuou ainda esta semana — seu voto pode abrir o placar.
+            Ninguém pontuou ainda este mês — seu voto pode abrir o placar.
           </div>
         )}
       </div>

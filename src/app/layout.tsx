@@ -24,7 +24,7 @@ const newsreader = Newsreader({
 export const metadata: Metadata = {
   title: 'Bancada — vitrine gamificada de side projects',
   description:
-    'Bancada é uma vitrine gamificada de side projects: placar semanal, pódio, votos e XP para a comunidade de builders.',
+    'Bancada é uma vitrine gamificada de side projects: placar mensal, pódio, votos e XP para a comunidade de builders.',
 };
 
 export default function RootLayout({

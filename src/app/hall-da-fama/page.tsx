@@ -3,7 +3,7 @@ import Board from '@/components/Board';
 import BancadaMark from '@/components/BancadaMark';
 import Stamp from '@/components/Stamp';
 import Movement from '@/components/Movement';
-import { currentRace, listChampions } from '@/lib/weekly';
+import { currentRace, listChampions } from '@/lib/monthly';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,12 +52,12 @@ export default async function HallDaFamaPage() {
               marginTop: 4,
             }}
           >
-            OS VENCEDORES DE CADA SEMANA
+            OS VENCEDORES DE CADA MÊS
           </div>
         </div>
       </div>
 
-      {/* em disputa: semana atual */}
+      {/* em disputa: mês atual */}
       <section
         style={{
           background: '#f7efda',
@@ -127,14 +127,14 @@ export default async function HallDaFamaPage() {
                   </div>
                 </div>
                 <span style={{ font: '800 13px var(--font-mono)', color: '#4f8a3a', flex: 'none' }}>
-                  ▲ {e.weeklyVotes}
+                  ▲ {e.monthlyVotes}
                 </span>
               </Link>
             ))}
           </div>
         ) : (
           <div style={{ font: '400 14px/1.5 var(--font-news)', color: '#5a4f3c' }}>
-            Nenhum voto nesta semana ainda. O primeiro a pontuar assume a ponta.
+            Nenhum voto neste mês ainda. O primeiro a pontuar assume a ponta.
           </div>
         )}
       </section>
@@ -148,7 +148,7 @@ export default async function HallDaFamaPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {champions.map((c, i) => (
             <div
-              key={c.weekKey}
+              key={c.monthKey}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -171,8 +171,8 @@ export default async function HallDaFamaPage() {
                 ) : null}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ font: '600 9.5px var(--font-mono)', letterSpacing: '.1em', color: 'rgba(40,30,10,.55)' }}>
-                  SEMANA {c.range}
+                <div style={{ font: '600 9.5px var(--font-mono)', letterSpacing: '.1em', color: 'rgba(40,30,10,.55)', textTransform: 'uppercase' }}>
+                  {c.range}
                 </div>
                 <Link
                   href={`/project/${c.slug}`}
@@ -187,7 +187,7 @@ export default async function HallDaFamaPage() {
               <div style={{ textAlign: 'right', flex: 'none' }}>
                 <div style={{ font: '900 18px var(--font-archivo)', color: '#4f8a3a' }}>▲ {c.votes}</div>
                 <div style={{ font: '600 8.5px var(--font-mono)', letterSpacing: '.1em', color: 'rgba(40,30,10,.5)', marginTop: 2 }}>
-                  VOTOS NA SEMANA
+                  VOTOS NO MÊS
                 </div>
               </div>
             </div>
@@ -205,7 +205,7 @@ export default async function HallDaFamaPage() {
             textAlign: 'center',
           }}
         >
-          Ainda não há campeões — a primeira semana está em disputa agora.
+          Ainda não há campeões — o primeiro mês está em disputa agora.
         </div>
       )}
     </Board>
